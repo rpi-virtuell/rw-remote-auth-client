@@ -22,6 +22,7 @@ class RW_Remote_Auth_Client_Options {
      */
     static public function register_settings() {
         register_setting( 'rw_remote_auth_client_options', 'rw_remote_auth_client_options_server_endpoint_url' );
+        register_setting( 'rw_remote_auth_client_options', 'rw_remote_auth_client_register_redirect_url' );
         //register_setting( 'rw_remote_auth_client_options', 'rw_remote_auth_client_options_server' );
 
         //register_setting( 'rw_remote_auth_client_options', 'rw_remote_auth_server_options_whitelist_active' );
@@ -52,7 +53,7 @@ class RW_Remote_Auth_Client_Options {
      * @return  string
      */
     static public function get_loginserver_endpoint() {
-        if ( RW_REMOTE_AUTH_SERVER_API_ENDPOINT ) {
+        if ( defined ( RW_REMOTE_AUTH_SERVER_API_ENDPOINT ) ) {
             return RW_REMOTE_AUTH_SERVER_API_ENDPOINT;
         } else {
             return get_option( 'rw_remote_auth_client_options_server_endpoint_url' );
@@ -96,7 +97,7 @@ class RW_Remote_Auth_Client_Options {
         }
         ?>
         <div class="wrap"  id="rwremoteauthserveroptions">
-            <h2><?php _e( 'Remote Auth Server Options', RW_Remote_Auth_Client::$textdomain ); ?></h2>
+            <h2><?php _e( 'Remote Auth Client Options', RW_Remote_Auth_Client::$textdomain ); ?></h2>
             <p><?php _e( 'Settings for Remote Auth Server', RW_Remote_Auth_Client::$textdomain ); ?></p>
             <form method="POST" action="options.php"><fieldset class="widefat">
                     <?php
@@ -110,6 +111,16 @@ class RW_Remote_Auth_Client_Options {
                             <td>
                                 <input id="rw_remote_auth_client_options_server_endpoint_url" class="regular-text" type="text" value="<?php echo $server_endpoint_url; ?>" aria-describedby="endpoint_url-description" name="rw_remote_auth_client_options_server_endpoint_url" <?php echo $server_endpoint_disabled; ?>>
                                 <p id="endpoint_url-description" class="description"><?php _e( 'Endpoint URL for API request.', RW_Remote_Auth_Client::$textdomain); ?></p>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th scope="row">
+                                <label for="rw_remote_auth_client_register_redirect_url"><?php _e( 'Register hint URL', RW_Remote_Auth_Client::$textdomain ); ?></label>
+                            </th>
+                            <td>
+                                <input id="rw_remote_auth_client_register_redirect_url" class="regular-text" type="text" value="<?php echo get_option( 'rw_remote_auth_client_register_redirect_url' ); ?>" aria-describedby="rw_remote_auth_client_register_redirect_url" name="rw_remote_auth_client_register_redirect_url" >
+                                <p id="endpoint_url-description" class="description"><?php _e( 'URL for register hint page', RW_Remote_Auth_Client::$textdomain); ?></p>
                             </td>
                         </tr>
 

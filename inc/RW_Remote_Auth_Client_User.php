@@ -8,7 +8,7 @@ class RW_Remote_Auth_Client_User {
             wp_create_user( $sanitized_user_login, '', $user_email );
         } else {
             self::remote_user_register( $sanitized_user_login, $user_email );
-            wp_redirect( 'http://heise.de');
+            wp_redirect( get_option( 'rw_remote_auth_client_register_redirect_url' ) );
             exit;
         }
         return $errors;
@@ -21,7 +21,7 @@ class RW_Remote_Auth_Client_User {
                             )
                         );
         $json = urlencode( json_encode( $request ) );
-        $response = wp_remote_get( "https://login.rpi/my_api/" . $json , array ( 'sslverify' => false ) );
+        $response = wp_remote_get( RW_Remote_Auth_Client_Options::get_loginserver_endpoint() . $json , array ( 'sslverify' => false ) );
         try {
             $json = json_decode( $response['body'] );
         } catch ( Exception $ex ) {
@@ -38,7 +38,7 @@ class RW_Remote_Auth_Client_User {
             )
         );
         $json = urlencode( json_encode( $request ) );
-        $response = wp_remote_get( "https://login.rpi/my_api/" . $json , array ( 'sslverify' => false ) );
+        $response = wp_remote_get( RW_Remote_Auth_Client_Options::get_loginserver_endpoint() . $json , array ( 'sslverify' => false ) );
         try {
             $json = json_decode( $response['body'] );
         } catch ( Exception $ex ) {
