@@ -105,8 +105,11 @@ class RW_Remote_Auth_Client {
         add_action( 'admin_menu',       array( 'RW_Remote_Auth_Client_Options', 'options_menu' ) );
 
         add_filter( 'plugin_action_links_' . self::$plugin_base_name, array( 'RW_Remote_Auth_Client_Options', 'plugin_settings_link') );
-        add_filter( 'registration_errors',      array( 'RW_Remote_Auth_Client_User', 'check_remote_user_on_register' ), 10, 3 );
+        //add_filter( 'registration_errors',      array( 'RW_Remote_Auth_Client_User', 'check_remote_user_on_register' ), 9999, 3 );
+	    // If Multisite
+        //add_filter( 'wpmu_validate_user_signup', array( 'RW_Remote_Auth_Client_User', 'check_remote_user_on_multisite_register' ), 9999, 1 );
 
+		add_action( 'wpmu_new_user', array( 'RW_Remote_Auth_Client_User', 'create_user_on_login_server' ) );
         do_action( 'rw_remote_auth_client_init' );
     }
 

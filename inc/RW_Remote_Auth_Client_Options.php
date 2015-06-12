@@ -53,7 +53,7 @@ class RW_Remote_Auth_Client_Options {
      * @return  string
      */
     static public function get_loginserver_endpoint() {
-        if ( defined ( RW_REMOTE_AUTH_SERVER_API_ENDPOINT ) ) {
+        if ( defined ( 'RW_REMOTE_AUTH_SERVER_API_ENDPOINT' ) ) {
             return RW_REMOTE_AUTH_SERVER_API_ENDPOINT;
         } else {
             return get_option( 'rw_remote_auth_client_options_server_endpoint_url' );
@@ -90,7 +90,7 @@ class RW_Remote_Auth_Client_Options {
         }
         $server_endpoint_url = get_option( 'rw_remote_auth_client_options_server_endpoint_url' );
         $server_endpoint_disabled = '';
-        if ( defined( RW_REMOTE_AUTH_SERVER_API_ENDPOINT ) ) {
+        if ( defined( 'RW_REMOTE_AUTH_SERVER_API_ENDPOINT' ) ) {
             // Endpoint is set in wp_config
             $server_endpoint_url = RW_REMOTE_AUTH_SERVER_API_ENDPOINT;
             $server_endpoint_disabled = ' disabled ';
