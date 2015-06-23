@@ -72,7 +72,7 @@ class RW_Remote_Auth_Client_Options {
      */
     static public function options_menu() {
         add_options_page( 'Remote Auth Client',  __('Remote Auth Client', RW_Remote_Auth_Client::$textdomain ), 'manage_options',
-            __FILE__, array( 'RW_Remote_Auth_Client_Options', 'create_options' ) );
+            RW_Remote_Auth_Client::$plugin_base_name, array( 'RW_Remote_Auth_Client_Options', 'create_options' ) );
     }
 
     /**
