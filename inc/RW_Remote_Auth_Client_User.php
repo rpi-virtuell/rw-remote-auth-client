@@ -28,18 +28,22 @@ class RW_Remote_Auth_Client_User {
         return $result;
     }
 
-	public static function create_user_on_login_server ( $user_id ) {
+	public static function create_mu_user_on_login_server ( $user_id ) {
 		global $wpdb;
-		$user = get_user_by( 'id', $user_id );
+	  $user = get_user_by( 'id', $user_id );
 		if ( is_object( $user)) {
 			// UserObject has wrong, temporary password
-			// Get korrekt password from signup table
+			// Get correct password from signup table
 			$signup = $wpdb->get_row( $wpdb->prepare("SELECT * FROM $wpdb->signups WHERE user_email = %s", $user->user_email) );
 			$meta = maybe_unserialize($signup->meta);
 			self::remote_user_register($user->user_login, $user->user_email, $meta['password'] );
 		}
 	}
 
+	public static function create_user_on_login_server ( $user_id ) {
+		$user = get_user_by( 'id', $user_id );
+		self::remote_user_register($user->user_login, $user->user_email, $user->password );
+	}
 
 
     public static function remote_user_exists( $username ) {

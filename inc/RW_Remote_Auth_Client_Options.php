@@ -132,4 +132,5 @@ class RW_Remote_Auth_Client_Options {
         </div>
     <?php
     }
+
 }
