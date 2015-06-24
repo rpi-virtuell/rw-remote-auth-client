@@ -117,20 +117,31 @@ class RW_Remote_Auth_Client_User {
 		return $json->message;
 	}
 
-	
+
 	public static function get_password_from_loginserver( $user_login, $user ) {
 		global $wpdb;
 
-		$password = self::remote_user_get_password( $user->user_nicename );
+		$data = json_decode( self::remote_user_get_password( $user->user_nicename ) );
 		$wpdb->update (
 			$wpdb->users,
 			array(
-				'user_pass' => urldecode( $password ),
+				'user_pass' => urldecode( $data->password ),
 			),
 			array(
 				'ID' => $user->ID
 			)
 		);
+		if ( $user->user_email == '' ) {
+			$wpdb->update (
+				$wpdb->users,
+				array(
+					'user_email' => urldecode( $data->email ),
+				),
+				array(
+					'ID' => $user->ID
+				)
+			);
+		}
 	}
 
 	public static function remote_user_get_password( $username ) {
