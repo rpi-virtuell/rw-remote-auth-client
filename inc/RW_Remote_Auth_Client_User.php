@@ -45,6 +45,13 @@ class RW_Remote_Auth_Client_User {
 		self::remote_user_register($user->user_login, $user->user_email, $user->password );
 	}
 
+	public static function change_password_on_login_server ( $user_id, $old_user ) {
+		$new_user = get_user_by( 'id', $user_id );
+		if ( $new_user->user_pass != $old_user->user_pass ) {
+			// password changed
+			self::remote_change_password( $new_user->user_login, $old_user->user_pass, $new_user->user_pass );
+		}
+	}
 
     public static function remote_user_exists( $username ) {
         $request = array(   'cmd' => 'user_exists',
@@ -82,4 +89,63 @@ class RW_Remote_Auth_Client_User {
         return $json->message;
     }
 
+	/**
+	 *
+	 * @todo  passwort änderung absichern, das es nur vom dem user kommt,stichwort cas service auth
+	 *
+	 * @param $user_login
+	 * @param $user_old_password
+	 * @param $user_new_password
+	 *
+	 * @return null
+	 */
+	public static function remote_change_password( $user_login, $user_old_password, $user_new_password ) {
+		$request = array(   'cmd' => 'user_change_password',
+		                    'data' => array (
+			                    'user_name' => $user_login,
+			                    'user_old_password' => urlencode( $user_old_password ),
+			                    'user_new_password' => urlencode( $user_new_password )
+		                    )
+		);
+		$json = rawurlencode( json_encode( $request ) );
+		$response = wp_remote_get( RW_Remote_Auth_Client_Options::get_loginserver_endpoint() . $json , array ( 'sslverify' => false ) );
+		try {
+			$json = json_decode( $response['body'] );
+		} catch ( Exception $ex ) {
+			return null;
+		}
+		return $json->message;
+	}
+
+	
+	public static function get_password_from_loginserver( $user_login, $user ) {
+		global $wpdb;
+
+		$password = self::remote_user_get_password( $user->user_nicename );
+		$wpdb->update (
+			$wpdb->users,
+			array(
+				'user_pass' => urldecode( $password ),
+			),
+			array(
+				'ID' => $user->ID
+			)
+		);
+	}
+
+	public static function remote_user_get_password( $username ) {
+		$request = array(   'cmd' => 'user_get_password',
+		                    'data' => array (
+			                    'user_name' => $username
+		                    )
+		);
+		$json = urlencode( json_encode( $request ) );
+		$response = wp_remote_get( RW_Remote_Auth_Client_Options::get_loginserver_endpoint() . $json , array ( 'sslverify' => false ) );
+		try {
+			$json = json_decode( $response['body'] );
+		} catch ( Exception $ex ) {
+			return null;
+		}
+		return $json->message;
+	}
 }
