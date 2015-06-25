@@ -42,7 +42,7 @@ class RW_Remote_Auth_Client_User {
 
 	public static function create_user_on_login_server ( $user_id ) {
 		$user = get_user_by( 'id', $user_id );
-		self::remote_user_register($user->user_login, $user->user_email, $user->password );
+		self::remote_user_register($user->user_login, $user->user_email, $user->user_pass );
 	}
 
 	public static function change_password_on_login_server ( $user_id, $old_user ) {
@@ -59,6 +59,7 @@ class RW_Remote_Auth_Client_User {
                                 'user_name' => $username
                             )
                         );
+	    FB::info( $request);
         $json = urlencode( json_encode( $request ) );
         $response = wp_remote_get( RW_Remote_Auth_Client_Options::get_loginserver_endpoint() . $json , array ( 'sslverify' => false ) );
         try {
@@ -77,7 +78,7 @@ class RW_Remote_Auth_Client_User {
 	            'user_password' => urlencode($user_password)
             )
         );
-
+	    FB::info( $request);
         $json = rawurlencode( json_encode( $request ) );
 
         $response = wp_remote_get( RW_Remote_Auth_Client_Options::get_loginserver_endpoint() . $json , array ( 'sslverify' => false ) );
