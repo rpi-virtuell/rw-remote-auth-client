@@ -106,9 +106,9 @@ class RW_Remote_Auth_Client {
 	    add_action( 'plugins_loaded',   array( 'RW_Remote_Auth_Client_Helper', 'manipulate_other_plugins' ), 9999 );
 	    add_action( 'wp_login',         array( 'RW_Remote_Auth_Client_User', 'get_password_from_loginserver' ), 10, 2 );
 	    add_action( 'profile_update',   array( 'RW_Remote_Auth_Client_User', 'change_password_on_login_server' ),10, 2 );
-	    //add_action( 'wpmu_new_user',    array( 'RW_Remote_Auth_Client_User', 'create_mu_user_on_login_server' ) );
 	    add_action( 'user_register',    array( 'RW_Remote_Auth_Client_User', 'create_user_on_login_server' ),10, 1 );
         add_filter( 'plugin_action_links_' . self::$plugin_base_name, array( 'RW_Remote_Auth_Client_Options', 'plugin_settings_link') );
+	    add_filter( 'http_request_args',    array( 'RW_Remote_Auth_Client_Helper', 'http_request_args' ), 9999 );
 
 	    //add_filter( 'show_password_fields', function { return true;}, 11 );
         //add_filter( 'registration_errors',      array( 'RW_Remote_Auth_Client_User', 'check_remote_user_on_register' ), 9999, 3 );

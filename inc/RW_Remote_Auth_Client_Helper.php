@@ -11,9 +11,21 @@ class RW_Remote_Auth_Client_Helper {
 		add_filter ( 'show_password_fields', array( 'RW_Remote_Auth_Client_Helper', 'show_password_fields' ),9999 );
 	}
 
-
+	/**
+	 * @return bool
+	 */
 	static public function show_password_fields() {
 		return true;
+	}
+
+	/**
+	 * @param $args
+	 *
+	 * @return mixed
+	 */
+	static public function http_request_args( $args ) {
+		$args['sslverify'] = false;
+		return ( $args );
 	}
 
 }
