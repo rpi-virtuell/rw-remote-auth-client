@@ -10,7 +10,7 @@
  * Author URI:       http://staude.net
  * Text Domain:      rw_remote_auth_client
  * Domain Path:      /languages
- * Last Change:      02.06.2015 13:20
+ * Last Change:      25.06.2015 13:20
  */
 
 class RW_Remote_Auth_Client {
@@ -21,7 +21,7 @@ class RW_Remote_Auth_Client {
      * @since   0.1
      * @access  public
      */
-    static public $version = "0.1";
+    static public $version = "0.1.1";
 
     /**
      * Singleton object holder
