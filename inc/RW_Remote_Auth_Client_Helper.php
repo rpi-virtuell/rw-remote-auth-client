@@ -28,4 +28,23 @@ class RW_Remote_Auth_Client_Helper {
 		return ( $args );
 	}
 
+	/**
+	 * Save Referrer on Loginpage and redirct user to referrer page after login
+	 *
+	 * @since   0.1.2
+	 * @access  public
+	 * @static
+	 * @return  void
+	 */
+	static public function validate_login( ) {
+		if ( isset( $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ] ) && $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ] != '' ) {
+			$cookie = $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ];
+			unset ( $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ] );
+			wp_redirect( $cookie );
+			exit;
+		} else {
+			setcookie( RW_Remote_Auth_Client::$cookie_name, $_SERVER[ 'HTTP_REFERER' ] );
+		}
+	}
+
 }
