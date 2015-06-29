@@ -21,7 +21,7 @@ class RW_Remote_Auth_Client {
      * @since   0.1
      * @access  public
      */
-    static public $version = "0.1.1";
+    static public $version = "0.1.2";
 
     /**
      * Singleton object holder
@@ -74,6 +74,11 @@ class RW_Remote_Auth_Client {
      */
     static public $plugin_version = '';
 
+	/**
+	 * @var     string
+	 * @since   0.1.2
+	 * @access  public
+	 */	static public $cookie_name = 'remote_login_referrer';
 
     /**
      * Plugin constructor.
@@ -101,19 +106,15 @@ class RW_Remote_Auth_Client {
 
         // Add Filter & Actions
 
-        add_action( 'admin_init',       array( 'RW_Remote_Auth_Client_Options', 'register_settings' ) );
-        add_action( 'admin_menu',       array( 'RW_Remote_Auth_Client_Options', 'options_menu' ) );
-	    add_action( 'plugins_loaded',   array( 'RW_Remote_Auth_Client_Helper', 'manipulate_other_plugins' ), 9999 );
-	    add_action( 'wp_login',         array( 'RW_Remote_Auth_Client_User', 'get_password_from_loginserver' ), 10, 2 );
-	    add_action( 'profile_update',   array( 'RW_Remote_Auth_Client_User', 'change_password_on_login_server' ),10, 2 );
-	    add_action( 'user_register',    array( 'RW_Remote_Auth_Client_User', 'create_user_on_login_server' ),10, 1 );
+        add_action( 'admin_init',           array( 'RW_Remote_Auth_Client_Options', 'register_settings' ) );
+        add_action( 'admin_menu',           array( 'RW_Remote_Auth_Client_Options', 'options_menu' ) );
+	    add_action( 'plugins_loaded',       array( 'RW_Remote_Auth_Client_Helper', 'manipulate_other_plugins' ), 9999 );
+	    add_action( 'wp_login',             array( 'RW_Remote_Auth_Client_User', 'get_password_from_loginserver' ), 10, 2 );
+	    add_action( 'profile_update',       array( 'RW_Remote_Auth_Client_User', 'change_password_on_login_server' ),10, 2 );
+	    add_action( 'user_register',        array( 'RW_Remote_Auth_Client_User', 'create_user_on_login_server' ),10, 1 );
         add_filter( 'plugin_action_links_' . self::$plugin_base_name, array( 'RW_Remote_Auth_Client_Options', 'plugin_settings_link') );
 	    add_filter( 'http_request_args',    array( 'RW_Remote_Auth_Client_Helper', 'http_request_args' ), 9999 );
-
-	    //add_filter( 'show_password_fields', function { return true;}, 11 );
-        //add_filter( 'registration_errors',      array( 'RW_Remote_Auth_Client_User', 'check_remote_user_on_register' ), 9999, 3 );
-	    // If Multisite
-        //add_filter( 'wpmu_validate_user_signup', array( 'RW_Remote_Auth_Client_User', 'check_remote_user_on_multisite_register' ), 9999, 1 );
+        add_action( 'login_init',           array( 'RW_Remote_Auth_Client_Helper', 'validate_login' ),1  );
 
     }
 
