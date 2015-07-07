@@ -5,7 +5,7 @@
  * Plugin URI:       https://github.com/rpi-virtuell/rw_remote_auth_client
  * Description:
  * Author:           Frank Staude
- * Version:          0.1.7
+ * Version:          0.1.8
  * Licence:          GPLv3
  * Author URI:       http://staude.net
  * Text Domain:      rw_remote_auth_client
@@ -22,7 +22,7 @@ class RW_Remote_Auth_Client {
      * @since   0.1
      * @access  public
      */
-    static public $version = "0.1.7";
+    static public $version = "0.1.8";
 
     /**
      * Singleton object holder
