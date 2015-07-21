@@ -78,23 +78,27 @@ class RW_Remote_Auth_Client_User {
     }
 
     public static function remote_user_register( $sanitized_user_login, $user_email, $user_password = '' ) {
-        $request = array(   'cmd' => 'user_create',
-            'data' => array (
-                'user_name' => $sanitized_user_login,
-                'user_email' => $user_email,
-	            'user_password' => urlencode($user_password)
-            )
-        );
+	    if ( ! RW_Remote_Auth_Client_User::remote_user_exists( $sanitized_user_login ) ) {
+		    $request = array(
+			    'cmd'  => 'user_create',
+			    'data' => array(
+				    'user_name'     => $sanitized_user_login,
+				    'user_email'    => $user_email,
+				    'user_password' => urlencode( $user_password )
+			    )
+		    );
 
-        $json = rawurlencode( json_encode( $request ) );
+		    $json = rawurlencode( json_encode( $request ) );
 
-        $response = wp_remote_get( RW_Remote_Auth_Client_Options::get_loginserver_endpoint() . $json , array ( 'sslverify' => false ) );
-        try {
-            $json = json_decode( $response['body'] );
-        } catch ( Exception $ex ) {
-            return null;
-        }
-        return $json->message;
+		    $response = wp_remote_get( RW_Remote_Auth_Client_Options::get_loginserver_endpoint() . $json, array( 'sslverify' => false ) );
+		    try {
+			    $json = json_decode( $response['body'] );
+		    } catch ( Exception $ex ) {
+			    return null;
+		    }
+
+		    return $json->message;
+	    }
     }
 
 	/**
