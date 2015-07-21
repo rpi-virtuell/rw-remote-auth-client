@@ -36,7 +36,14 @@ class RW_Remote_Auth_Client_User {
 			// Get correct password from signup table
 			$signup = $wpdb->get_row( $wpdb->prepare("SELECT * FROM $wpdb->signups WHERE user_email = %s", $user->user_email) );
 			$meta = maybe_unserialize($signup->meta);
-			self::remote_user_register($user->user_login, $user->user_email, $meta['password'] );
+			if ( is_array( $meta ) && isset( $meta['password'] ) ) {
+				// Userpassword from registration page
+				$password = $meta['password'];
+			} else {
+				// system generated password on new users via backend created
+				$password =$user->user_pass;
+			}
+			self::remote_user_register($user->user_login, $user->user_email, $password );
 		}
 	}
 
