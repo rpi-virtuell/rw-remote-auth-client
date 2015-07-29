@@ -37,7 +37,7 @@ class RW_Remote_Auth_Client_Helper {
 	 * @return  void
 	 */
 	static public function validate_login( ) {
-		if ( ! is_user_logged_in() && ! isset( $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ] ) ) {
+		if ( ! is_user_logged_in() && ! isset( $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ] ) && isset( $_SERVER['HTTP_REFERER'] ) )  {
 			setcookie( RW_Remote_Auth_Client::$cookie_name, $_SERVER['HTTP_REFERER'], time()+ ( 5 * 60 ) );
 		}
 	}

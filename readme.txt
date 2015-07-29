@@ -1,9 +1,9 @@
-=== RW Remote Auth Server ===
+=== RW Remote Auth Client ===
 Contributors: f.staude
 Tags:
 Requires at least: 4.0
 Tested up to: 4.2.2
-Stable tag: 0.1.9
+Stable tag: 0.1.10
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -37,6 +37,11 @@ Answer
 
 
 == Changelog ==
+
+= 0.1.10 =
+* typo in readme
+* fixes Undefined index: HTTP_REFERER ( #14 )
+
 
 = 0.1.9 =
 * fixes problem with transmit wrong passwords and user duplicate on server
