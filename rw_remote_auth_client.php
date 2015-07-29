@@ -110,12 +110,14 @@ class RW_Remote_Auth_Client {
         add_action( 'admin_init',           array( 'RW_Remote_Auth_Client_Options', 'register_settings' ) );
         add_action( 'admin_menu',           array( 'RW_Remote_Auth_Client_Options', 'options_menu' ) );
 	    add_action( 'plugins_loaded',       array( 'RW_Remote_Auth_Client_Helper', 'manipulate_other_plugins' ), 9999 );
-	    add_action( 'wp_login',             array( 'RW_Remote_Auth_Client_User', 'get_password_from_loginserver' ), 10, 2 );
-	    add_action( 'profile_update',       array( 'RW_Remote_Auth_Client_User', 'change_password_on_login_server' ),10, 2 );
-	    if ( is_multisite() ) {
-		    add_action( 'wpmu_new_user', array( 'RW_Remote_Auth_Client_User', 'create_mu_user_on_login_server' ) );
-	    } else {
-	        add_action( 'user_register',        array( 'RW_Remote_Auth_Client_User', 'create_user_on_login_server' ),10, 1 );
+	    if ( ! isset( $_GET[ 'wp' ] ) ) { // CAS Maestro Bypass is active
+		    add_action( 'wp_login',             array( 'RW_Remote_Auth_Client_User', 'get_password_from_loginserver' ), 10, 2 );
+		    add_action( 'profile_update',       array( 'RW_Remote_Auth_Client_User', 'change_password_on_login_server' ),10, 2 );
+		    if ( is_multisite() ) {
+			    add_action( 'wpmu_new_user', array( 'RW_Remote_Auth_Client_User', 'create_mu_user_on_login_server' ) );
+		    } else {
+		        add_action( 'user_register',        array( 'RW_Remote_Auth_Client_User', 'create_user_on_login_server' ),10, 1 );
+		    }
 	    }
         add_filter( 'plugin_action_links_' . self::$plugin_base_name, array( 'RW_Remote_Auth_Client_Options', 'plugin_settings_link') );
 	    add_filter( 'http_request_args',    array( 'RW_Remote_Auth_Client_Helper', 'http_request_args' ), 9999 );
