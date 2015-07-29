@@ -42,7 +42,8 @@ class RW_Remote_Auth_Client_Installation {
             )
             );
         }
-
+		// schedule check
+	    wp_schedule_event( time(), 'twicedaily' , 'rw_auth_remote_check_server' );
         // Flush Rewrite Rules after activation
         flush_rewrite_rules();
 
@@ -60,6 +61,10 @@ class RW_Remote_Auth_Client_Installation {
      * @return  void
      */
     public static function on_deactivation() {
+	    // unschedule check
+	    $timestamp = wp_next_scheduled( 'rw_auth_remote_check_server' );
+	    wp_unschedule_event( $timestamp, 'rw_auth_remote_check_server' );
+
         flush_rewrite_rules();
     }
 
@@ -78,4 +83,32 @@ class RW_Remote_Auth_Client_Installation {
     public static function on_uninstall() {
 
     }
+
+	/**
+	 * Check the remote rw_auth server
+	 *
+	 * @since 0.1.10
+	 * @return null
+	 */
+	public static function check_server() {
+		$error = false;
+		$request = array(   'cmd' => 'ping' );
+		$json = urlencode( json_encode( $request ) );
+		$response = wp_remote_get( RW_Remote_Auth_Client_Options::get_loginserver_endpoint() . $json, array ( 'sslverify' => false ) );
+		if ( is_wp_error( $response ) ) {
+			$error = true;
+		} else {
+			try {
+				$json = json_decode( $response['body'] );
+			} catch ( Exception $ex ) {
+				$error = true;
+			}
+		}
+		if ( $error ) {
+			$admin_email = get_option( 'admin_email' );
+			$mail_subject = __( 'rw_auth not responding', 'rw_remote_auth_client' );
+			$mail_text = sprintg ( __( 'The rw_auth on %1s ist not responding.', 'rw_remote_auth_client' ),  RW_Remote_Auth_Client_Options::get_loginserver_endpoint() );
+			wp_mail( $admin_email, $mail_subject, $mail_text );
+		}
+	}
 }

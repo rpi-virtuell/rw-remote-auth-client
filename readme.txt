@@ -41,7 +41,8 @@ Answer
 = 0.1.10 =
 * typo in readme
 * fixes Undefined index: HTTP_REFERER ( #14 )
-
+* check CAS Maestro bypass ( #16 )
+* implement selftest ( #17 )
 
 = 0.1.9 =
 * fixes problem with transmit wrong passwords and user duplicate on server

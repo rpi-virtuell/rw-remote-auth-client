@@ -123,7 +123,7 @@ class RW_Remote_Auth_Client {
 	    add_filter( 'http_request_args',    array( 'RW_Remote_Auth_Client_Helper', 'http_request_args' ), 9999 );
 	    add_filter( 'login_redirect', array( 'RW_Remote_Auth_Client_Helper', 'login_redirect' ) );
         add_action( 'login_init',           array( 'RW_Remote_Auth_Client_Helper', 'validate_login' ),1  );
-
+	    add_action( 'rw_auth_remote_check_server', array( 'RW_Remote_Auth_Client_Installation', 'check_server') );
     }
 
     /**
