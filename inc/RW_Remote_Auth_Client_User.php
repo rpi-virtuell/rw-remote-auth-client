@@ -3,6 +3,13 @@
 class RW_Remote_Auth_Client_User {
 
 
+	/**
+	 * @param $errors
+	 * @param $sanitized_user_login
+	 * @param $user_email
+	 *
+	 * @return mixed
+	 */
     public static function check_remote_user_on_register( $errors, $sanitized_user_login, $user_email ) {
         if ( self::remote_user_exists( $sanitized_user_login ) && ! username_exists( $sanitized_user_login ) ) {
             wp_create_user( $sanitized_user_login, '', $user_email );
@@ -14,6 +21,11 @@ class RW_Remote_Auth_Client_User {
         return $errors;
     }
 
+	/**
+	 * @param $result
+	 *
+	 * @return mixed
+	 */
     public static function check_remote_user_on_multisite_register ( $result ) {
 	    if ( self::remote_user_exists( $result['user_name'] ) && ! username_exists( $result['user_name'] ) ) {
             wp_create_user( $result['user_name'], '', $result['user_email'] );
@@ -28,6 +40,9 @@ class RW_Remote_Auth_Client_User {
         return $result;
     }
 
+	/**
+	 * @param $user_id
+	 */
 	public static function create_mu_user_on_login_server ( $user_id ) {
 		global $wpdb;
 	  $user = get_user_by( 'id', $user_id );
@@ -47,11 +62,18 @@ class RW_Remote_Auth_Client_User {
 		}
 	}
 
+	/**
+	 * @param $user_id
+	 */
 	public static function create_user_on_login_server ( $user_id ) {
 		$user = get_user_by( 'id', $user_id );
 		self::remote_user_register($user->user_login, $user->user_email, $user->user_pass );
 	}
 
+	/**
+	 * @param $user_id
+	 * @param $old_user
+	 */
 	public static function change_password_on_login_server ( $user_id, $old_user ) {
 		$new_user = get_user_by( 'id', $user_id );
 		if ( $new_user->user_pass != $old_user->user_pass ) {
@@ -60,6 +82,11 @@ class RW_Remote_Auth_Client_User {
 		}
 	}
 
+	/**
+	 * @param $username
+	 *
+	 * @return null
+	 */
     public static function remote_user_exists( $username ) {
         $request = array(   'cmd' => 'user_exists',
                             'data' => array (
@@ -77,6 +104,13 @@ class RW_Remote_Auth_Client_User {
         return $json->message;
     }
 
+	/**
+	 * @param $sanitized_user_login
+	 * @param $user_email
+	 * @param string $user_password
+	 *
+	 * @return null
+	 */
     public static function remote_user_register( $sanitized_user_login, $user_email, $user_password = '' ) {
 	    if ( ! RW_Remote_Auth_Client_User::remote_user_exists( $sanitized_user_login ) ) {
 		    $request = array(
@@ -129,33 +163,42 @@ class RW_Remote_Auth_Client_User {
 		return $json->message;
 	}
 
-
+	/**
+	 * @param $user_login
+	 * @param $user
+	 */
 	public static function get_password_from_loginserver( $user_login, $user ) {
 		global $wpdb;
-
-		$data = json_decode( self::remote_user_get_password( $user->user_nicename ) );
-		$wpdb->update (
-			$wpdb->users,
-			array(
-				'user_pass' => urldecode( $data->password ),
-			),
-			array(
-				'ID' => $user->ID
-			)
-		);
-		if ( $user->user_email == '' ) {
-			$wpdb->update (
+		if ( get_option( 'rw_remote_auth_client_bypass_admin' ) != 1 || ( get_option( 'rw_remote_auth_client_bypass_admin' ) == 1 &&   !current_user_can( 'Administrator' ) && !current_user_can( 'Super Admin' ) ) ) {
+			$data = json_decode( self::remote_user_get_password( $user->user_nicename ) );
+			$wpdb->update(
 				$wpdb->users,
 				array(
-					'user_email' => urldecode( $data->email ),
+					'user_pass' => urldecode( $data->password ),
 				),
 				array(
 					'ID' => $user->ID
 				)
 			);
+			if ( $user->user_email == '' ) {
+				$wpdb->update(
+					$wpdb->users,
+					array(
+						'user_email' => urldecode( $data->email ),
+					),
+					array(
+						'ID' => $user->ID
+					)
+				);
+			}
 		}
 	}
 
+	/**
+	 * @param $username
+	 *
+	 * @return null
+	 */
 	public static function remote_user_get_password( $username ) {
 		$request = array(   'cmd' => 'user_get_password',
 		                    'data' => array (

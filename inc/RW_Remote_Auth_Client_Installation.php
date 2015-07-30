@@ -106,8 +106,8 @@ class RW_Remote_Auth_Client_Installation {
 		}
 		if ( $error ) {
 			$admin_email = get_option( 'admin_email' );
-			$mail_subject = __( 'rw_auth not responding', 'rw_remote_auth_client' );
-			$mail_text = sprintg ( __( 'The rw_auth on %1s ist not responding.', 'rw_remote_auth_client' ),  RW_Remote_Auth_Client_Options::get_loginserver_endpoint() );
+			$mail_subject = __( 'rw_auth not responding',  RW_Remote_Auth_Client::$textdomain );
+			$mail_text = sprintg ( __( 'The rw_auth on %1s ist not responding.', RW_Remote_Auth_Client::$textdomain ),  RW_Remote_Auth_Client_Options::get_loginserver_endpoint() );
 			wp_mail( $admin_email, $mail_subject, $mail_text );
 		}
 	}

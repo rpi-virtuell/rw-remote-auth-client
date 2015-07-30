@@ -23,6 +23,8 @@ class RW_Remote_Auth_Client_Options {
     static public function register_settings() {
         register_setting( 'rw_remote_auth_client_options', 'rw_remote_auth_client_options_server_endpoint_url' );
         register_setting( 'rw_remote_auth_client_options', 'rw_remote_auth_client_register_redirect_url' );
+	    register_setting( 'rw_remote_auth_client_options', 'rw_remote_auth_client_bypass_admin' );
+
         //register_setting( 'rw_remote_auth_client_options', 'rw_remote_auth_client_options_server' );
 
         //register_setting( 'rw_remote_auth_client_options', 'rw_remote_auth_server_options_whitelist_active' );
@@ -123,7 +125,15 @@ class RW_Remote_Auth_Client_Options {
                                 <p id="endpoint_url-description" class="description"><?php _e( 'URL for register hint page', RW_Remote_Auth_Client::$textdomain); ?></p>
                             </td>
                         </tr>
-
+	                    <tr>
+		                    <th scope="row">
+			                    <label for="rw_remote_auth_client_bypass_admin"><?php _e( 'Don\'t overwrite admin password', RW_Remote_Auth_Client::$textdomain ); ?></label>
+		                    </th>
+		                    <td>
+			                    <input type="checkbox" name="rw_remote_auth_client_bypass_admin" value="1" <?php if ( get_option( 'rw_remote_auth_client_bypass_admin' ) ) echo " checked "; ?> />
+			                    <p id="bypass_admin-description" class="description"><?php _e( 'Check this box to bypass password overwrite from administrators ', RW_Remote_Auth_Client::$textdomain); ?></p>
+		                    </td>
+	                    </tr>
                     </table>
 
                     <br/>

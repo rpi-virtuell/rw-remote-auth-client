@@ -43,6 +43,7 @@ Answer
 * fixes Undefined index: HTTP_REFERER ( #14 )
 * check CAS Maestro bypass ( #16 )
 * implement selftest ( #17 )
+* optional bypass password overwrite on admin users ( #7 )
 
 = 0.1.9 =
 * fixes problem with transmit wrong passwords and user duplicate on server
