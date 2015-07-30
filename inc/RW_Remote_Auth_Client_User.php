@@ -96,12 +96,15 @@ class RW_Remote_Auth_Client_User {
 
         $json = urlencode( json_encode( $request ) );
         $response = wp_remote_get( RW_Remote_Auth_Client_Options::get_loginserver_endpoint() . $json , array ( 'sslverify' => false ) );
-        try {
-            $json = json_decode( $response['body'] );
-        } catch ( Exception $ex ) {
-            return null;
-        }
-        return $json->message;
+	    if ( !is_wp_error( $response ) ) {
+	        try {
+	            $json = json_decode( $response['body'] );
+	        } catch ( Exception $ex ) {
+	            return null;
+	        }
+	        return $json->message;
+	    }
+	    return false;
     }
 
 	/**
@@ -125,14 +128,17 @@ class RW_Remote_Auth_Client_User {
 		    $json = rawurlencode( json_encode( $request ) );
 
 		    $response = wp_remote_get( RW_Remote_Auth_Client_Options::get_loginserver_endpoint() . $json, array( 'sslverify' => false ) );
-		    try {
-			    $json = json_decode( $response['body'] );
-		    } catch ( Exception $ex ) {
-			    return null;
-		    }
+		    if ( !is_wp_error( $response ) ) {
+			    try {
+				    $json = json_decode( $response['body'] );
+			    } catch ( Exception $ex ) {
+				    return null;
+			    }
 
-		    return $json->message;
+			    return $json->message;
+		    }
 	    }
+	    return false;
     }
 
 	/**
@@ -155,12 +161,16 @@ class RW_Remote_Auth_Client_User {
 		);
 		$json = rawurlencode( json_encode( $request ) );
 		$response = wp_remote_get( RW_Remote_Auth_Client_Options::get_loginserver_endpoint() . $json , array ( 'sslverify' => false ) );
-		try {
-			$json = json_decode( $response['body'] );
-		} catch ( Exception $ex ) {
-			return null;
+		if ( !is_wp_error( $response ) ) {
+			try {
+				$json = json_decode( $response['body'] );
+			} catch ( Exception $ex ) {
+				return null;
+			}
+
+			return $json->message;
 		}
-		return $json->message;
+		return false;
 	}
 
 	/**
@@ -207,11 +217,15 @@ class RW_Remote_Auth_Client_User {
 		);
 		$json = urlencode( json_encode( $request ) );
 		$response = wp_remote_get( RW_Remote_Auth_Client_Options::get_loginserver_endpoint() . $json , array ( 'sslverify' => false ) );
-		try {
-			$json = json_decode( $response['body'] );
-		} catch ( Exception $ex ) {
-			return null;
+		if ( !is_wp_error( $response ) ) {
+			try {
+				$json = json_decode( $response['body'] );
+			} catch ( Exception $ex ) {
+				return null;
+			}
+
+			return $json->message;
 		}
-		return $json->message;
+		return false;
 	}
 }
