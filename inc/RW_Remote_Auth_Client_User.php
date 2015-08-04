@@ -45,7 +45,7 @@ class RW_Remote_Auth_Client_User {
 	 */
 	public static function create_mu_user_on_login_server ( $user_id ) {
 		global $wpdb;
-	  $user = get_user_by( 'id', $user_id );
+	    $user = get_user_by( 'id', $user_id );
 		if ( is_object( $user)) {
 			// UserObject has wrong, temporary password
 			// Get correct password from signup table

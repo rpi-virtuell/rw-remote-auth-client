@@ -38,24 +38,47 @@ class RW_Remote_Auth_Client_Helper {
 	 */
 	static public function validate_login( ) {
 		if ( ! is_user_logged_in() && ! isset( $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ] ) && isset( $_SERVER['HTTP_REFERER'] ) )  {
-			setcookie( RW_Remote_Auth_Client::$cookie_name, $_SERVER['HTTP_REFERER'], time()+ ( 5 * 60 ) );
+			setcookie( RW_Remote_Auth_Client::$cookie_name, $_SERVER['HTTP_REFERER'], time()+ ( 5 * 60 )  );
 		}
 	}
 
 	/**
-	 * Redirct user to referrer page after login
+	 * prepare user redirection
 	 *
 	 * @since   0.1.2
 	 * @access  public
 	 * @static
 	 * @return  void
 	 */
-	static public function login_redirect( $redirect_url ) {
-		if (  isset( $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ] ) && $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ] != '' ) {
-			$redirect_url = $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ];
-			unset ( $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ] );
-			setcookie( RW_Remote_Auth_Client::$cookie_name, '', time() - ( 60 * 60 ) );
-		}
+	static public function login_redirect( $redirect_url, $requested_redirect_to, $user ) {
+		wp_set_current_user( $user->ID );
+		wp_set_auth_cookie( $user->ID );
+		do_action( 'wp_login', $user->user_login );
 		return ( $redirect_url );
+	}
+
+	/**
+	 * 
+	 * @since   0.1.11
+	 * @access  public
+	 * @static
+	 */
+	static public function admin_init () {
+		if (  isset( $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ] ) && $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ] != '' ) {
+			$redirect_url =    $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ];
+			wp_redirect( $redirect_url );
+			exit;
+		}
+	}
+
+	/**
+	 * @since   0.1.11
+	 * @access  public
+	 * @static
+	 */
+	static public function init () {
+		if (  !is_admin() && is_user_logged_in()  && isset( $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ] ) && $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ] != '' ) {
+			setcookie( RW_Remote_Auth_Client::$cookie_name,  null, time() - ( 60 * 60 ) );
+		}
 	}
 }
