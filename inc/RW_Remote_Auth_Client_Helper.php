@@ -54,6 +54,17 @@ class RW_Remote_Auth_Client_Helper {
 		wp_set_current_user( $user->ID );
 		wp_set_auth_cookie( $user->ID );
 		do_action( 'wp_login', $user->user_login );
+
+		if (  isset( $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ] ) && $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ] != ''  && $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ] != get_site_url() . '/' ) {
+			$redirect_url = $_COOKIE[RW_Remote_Auth_Client::$cookie_name];
+			setcookie( RW_Remote_Auth_Client::$cookie_name,  null, time() - ( 60 * 60 ) );
+			return ( $redirect_url );
+		}
+		if (  is_user_logged_in() && function_exists( 'is_buddypress' ) && $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ] == get_site_url() . '/') {
+			$redirect_url =    bp_get_activity_root_slug();
+			setcookie( RW_Remote_Auth_Client::$cookie_name,  null, time() - ( 60 * 60 ) );
+			return ( $redirect_url );
+		}
 		return ( $redirect_url );
 	}
 
@@ -64,6 +75,7 @@ class RW_Remote_Auth_Client_Helper {
 	 * @static
 	 */
 	static public function admin_init () {
+
 		if (  isset( $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ] ) && $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ] != '' ) {
 			$redirect_url =    $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ];
 			wp_redirect( $redirect_url );
@@ -71,14 +83,4 @@ class RW_Remote_Auth_Client_Helper {
 		}
 	}
 
-	/**
-	 * @since   0.1.11
-	 * @access  public
-	 * @static
-	 */
-	static public function init () {
-		if (  !is_admin() && is_user_logged_in()  && isset( $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ] ) && $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ] != '' ) {
-			setcookie( RW_Remote_Auth_Client::$cookie_name,  null, time() - ( 60 * 60 ) );
-		}
-	}
 }
