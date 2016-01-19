@@ -3,7 +3,7 @@ Contributors: f.staude
 Tags:
 Requires at least: 4.0
 Tested up to: 4.4
-Stable tag: 0.1.12
+Stable tag: 0.1.13
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -37,6 +37,9 @@ Answer
 
 
 == Changelog ==
+
+= 0.1.13 =
+* Fix: cookie delete on non BuddyPress sites
 
 = 0.1.12 =
 * added redirect to buddypress activity slug if buddypress installed and user logins from site base url

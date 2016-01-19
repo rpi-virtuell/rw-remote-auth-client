@@ -65,6 +65,11 @@ class RW_Remote_Auth_Client_Helper {
 			setcookie( RW_Remote_Auth_Client::$cookie_name,  null, time() - ( 60 * 60 ) );
 			return ( $redirect_url );
 		}
+		if (  isset( $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ] ) && $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ] != '' ) {
+			$redirect_url = $_COOKIE[RW_Remote_Auth_Client::$cookie_name];
+			setcookie( RW_Remote_Auth_Client::$cookie_name,  null, time() - ( 60 * 60 ) );
+			return ( $redirect_url );
+		}
 		return ( $redirect_url );
 	}
 
