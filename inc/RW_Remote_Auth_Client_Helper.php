@@ -39,8 +39,12 @@ class RW_Remote_Auth_Client_Helper {
 	static public function validate_login( ) {
 		if ( ! is_user_logged_in() && ! isset( $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ] ) && isset( $_SERVER['HTTP_REFERER'] ) )  {
 			setcookie( RW_Remote_Auth_Client::$cookie_name, $_SERVER['HTTP_REFERER'], time()+ ( 5 * 60 )  );
+		} elseif ( isset( $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ] ) && is_user_logged_in() ) {
+			//Cookie löschen wenn es noch existiert
+			setcookie( RW_Remote_Auth_Client::$cookie_name,  null, time() - ( 60 * 60 ) );
 		}
-	}
+	}	
+	
 
 	/**
 	 * prepare user redirection
