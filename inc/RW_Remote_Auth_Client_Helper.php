@@ -87,8 +87,13 @@ class RW_Remote_Auth_Client_Helper {
 
 		if (  isset( $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ] ) && $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ] != '' ) {
 			$redirect_url =    $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ];
-			wp_redirect( $redirect_url );
-			exit;
+			if ( isset( $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ] ) && is_user_logged_in() ) {
+				//delete Cookie if exists
+				setcookie( RW_Remote_Auth_Client::$cookie_name,  null, time() - ( 60 * 60 ) );
+			}else{
+				wp_redirect( $redirect_url );
+				exit;
+			}
 		}
 	}
 
