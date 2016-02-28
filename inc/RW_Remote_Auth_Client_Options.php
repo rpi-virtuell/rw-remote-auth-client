@@ -21,14 +21,47 @@ class RW_Remote_Auth_Client_Options {
      * @return  void
      */
     static public function register_settings() {
+
         register_setting( 'rw_remote_auth_client_options', 'rw_remote_auth_client_options_server_endpoint_url' );
         register_setting( 'rw_remote_auth_client_options', 'rw_remote_auth_client_register_redirect_url' );
 	    register_setting( 'rw_remote_auth_client_options', 'rw_remote_auth_client_bypass_admin' );
+	    register_setting( 'rw_remote_auth_client_options', 'rw_remote_auth_client_api_key' );
 
-        //register_setting( 'rw_remote_auth_client_options', 'rw_remote_auth_client_options_server' );
+    }
+    /**
+     * save all network settings
+     *
+     * Register all the settings, the plugin uses.
+     *
+     * @since   0.2.0
+     * @access  public
+     * @static
+     * @return  void
+     * @useaction  admin_post_rw_remote_auth_client_network_settings
+     */
+    static public function network_settings() {
 
-        //register_setting( 'rw_remote_auth_client_options', 'rw_remote_auth_server_options_whitelist_active' );
-        //register_setting( 'rw_remote_auth_client_options', 'rw_remote_auth_server_options_whitelist' );
+        check_admin_referer('rw_remote_auth_client_network_settings');
+        if(!current_user_can('manage_network_options')) wp_die('FU');
+
+        $options = array(
+            'rw_remote_auth_client_options_server_endpoint_url',
+            'rw_remote_auth_client_register_redirect_url',
+            'rw_remote_auth_client_bypass_admin',
+            'rw_remote_auth_client_api_key',
+        );
+
+        foreach($options as $option){
+            if( isset( $_POST[ $option ] ) ) {
+                update_site_option( $option, ( $_POST[$option ] ) );
+            }else{
+                delete_site_option( $option );
+            }
+        }
+
+        wp_redirect(admin_url('network/settings.php?page='.RW_Remote_Auth_Client::$plugin_base_name));
+        exit;
+
     }
 
     /**
@@ -58,7 +91,7 @@ class RW_Remote_Auth_Client_Options {
         if ( defined ( 'RW_REMOTE_AUTH_SERVER_API_ENDPOINT' ) ) {
             return RW_REMOTE_AUTH_SERVER_API_ENDPOINT;
         } else {
-            return get_option( 'rw_remote_auth_client_options_server_endpoint_url' );
+            return get_site_option( 'rw_remote_auth_client_options_server_endpoint_url' );
         }
     }
 
@@ -73,9 +106,32 @@ class RW_Remote_Auth_Client_Options {
      * @return  void
      */
     static public function options_menu() {
-        add_options_page( 'Remote Auth Client',  __('Remote Auth Client', RW_Remote_Auth_Client::$textdomain ), 'manage_options',
-            RW_Remote_Auth_Client::$plugin_base_name, array( 'RW_Remote_Auth_Client_Options', 'create_options' ) );
+        if(is_multisite()){
+
+            add_submenu_page(
+                'settings.php',
+                'Remote Auth Client',
+                __('Remote Auth Client', RW_Remote_Auth_Client::$textdomain ),
+                'manage_network_options',
+                RW_Remote_Auth_Client::$plugin_base_name,
+                array( 'RW_Remote_Auth_Client_Options','create_options')
+            );
+
+        }else{
+
+            add_options_page(
+                'Remote Auth Client',
+                __('Remote Auth Client', RW_Remote_Auth_Client::$textdomain ),
+                'manage_options',
+                RW_Remote_Auth_Client::$plugin_base_name,
+                array( 'RW_Remote_Auth_Client_Options', 'create_options' )
+            );
+
+        }
+
+
     }
+
 
     /**
      * Generate the options page for the plugin
@@ -87,10 +143,17 @@ class RW_Remote_Auth_Client_Options {
      * @return  void
      */
     static public function create_options() {
+
+        if(is_multisite()){
+            $form_action = admin_url('admin-post.php?action=rw_remote_auth_client_network_settings');
+        }else{
+            $form_action = 'options.php';
+        }
+
         if ( !current_user_can( 'manage_options' ) )  {
             wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
         }
-        $server_endpoint_url = get_option( 'rw_remote_auth_client_options_server_endpoint_url' );
+        $server_endpoint_url = get_site_option( 'rw_remote_auth_client_options_server_endpoint_url' );
         $server_endpoint_disabled = '';
         if ( defined( 'RW_REMOTE_AUTH_SERVER_API_ENDPOINT' ) ) {
             // Endpoint is set in wp_config
@@ -101,9 +164,13 @@ class RW_Remote_Auth_Client_Options {
         <div class="wrap"  id="rwremoteauthserveroptions">
             <h2><?php _e( 'Remote Auth Client Options', RW_Remote_Auth_Client::$textdomain ); ?></h2>
             <p><?php _e( 'Settings for Remote Auth Server', RW_Remote_Auth_Client::$textdomain ); ?></p>
-            <form method="POST" action="options.php"><fieldset class="widefat">
+            <form method="POST" action="<?php echo $form_action; ?>"><fieldset class="widefat">
                     <?php
-                    settings_fields( 'rw_remote_auth_client_options' );
+                    if(is_multisite()){
+                        wp_nonce_field('rw_remote_auth_client_network_settings');
+                    }else{
+                        settings_fields( 'rw_remote_auth_client_options' );
+                    }
                     ?>
                     <table class="form-table">
                         <tr>
@@ -118,10 +185,19 @@ class RW_Remote_Auth_Client_Options {
 
                         <tr>
                             <th scope="row">
+                                <label for="rw_remote_auth_client_api_key"><?php _e( 'API Key', RW_Remote_Auth_Client::$textdomain ); ?></label>
+                            </th>
+                            <td>
+                                <input id="rw_remote_auth_client_api_key" class="regular-text" type="text" value="<?php echo get_site_option( 'rw_remote_auth_client_api_key' ); ?>" aria-describedby="rw_remote_auth_client_api_key" name="rw_remote_auth_client_api_key" >
+                                <p id="api_key-description" class="description"><?php _e( 'get a api key form loginserver admin', RW_Remote_Auth_Client::$textdomain); ?></p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">
                                 <label for="rw_remote_auth_client_register_redirect_url"><?php _e( 'Register hint URL', RW_Remote_Auth_Client::$textdomain ); ?></label>
                             </th>
                             <td>
-                                <input id="rw_remote_auth_client_register_redirect_url" class="regular-text" type="text" value="<?php echo get_option( 'rw_remote_auth_client_register_redirect_url' ); ?>" aria-describedby="rw_remote_auth_client_register_redirect_url" name="rw_remote_auth_client_register_redirect_url" >
+                                <input id="rw_remote_auth_client_register_redirect_url" class="regular-text" type="text" value="<?php echo get_site_option( 'rw_remote_auth_client_register_redirect_url' ); ?>" aria-describedby="rw_remote_auth_client_register_redirect_url" name="rw_remote_auth_client_register_redirect_url" >
                                 <p id="endpoint_url-description" class="description"><?php _e( 'URL for register hint page', RW_Remote_Auth_Client::$textdomain); ?></p>
                             </td>
                         </tr>
@@ -130,7 +206,7 @@ class RW_Remote_Auth_Client_Options {
 			                    <label for="rw_remote_auth_client_bypass_admin"><?php _e( 'Don\'t overwrite admin password', RW_Remote_Auth_Client::$textdomain ); ?></label>
 		                    </th>
 		                    <td>
-			                    <input type="checkbox" name="rw_remote_auth_client_bypass_admin" value="1" <?php if ( get_option( 'rw_remote_auth_client_bypass_admin' ) ) echo " checked "; ?> />
+			                    <input type="checkbox" name="rw_remote_auth_client_bypass_admin" value="1" <?php if ( get_site_option( 'rw_remote_auth_client_bypass_admin' ) ) echo " checked "; ?> />
 			                    <p id="bypass_admin-description" class="description"><?php _e( 'Check this box to bypass password overwrite from administrators ', RW_Remote_Auth_Client::$textdomain); ?></p>
 		                    </td>
 	                    </tr>
@@ -142,5 +218,6 @@ class RW_Remote_Auth_Client_Options {
         </div>
     <?php
     }
+
 
 }

@@ -42,6 +42,16 @@ class RW_Remote_Auth_Client_Installation {
             )
             );
         }
+		// check multisite
+		if ( is_multisite() && ! is_network_admin() ) {
+			deactivate_plugins( RW_Remote_Auth_Client::$plugin_filename );
+
+			wp_die(
+				'<strong>'.__('Sorry Admin!',RW_Remote_Auth_Client::get_textdomain()).'</strong> ' .
+				__( 'In a multisite context you may only activate this plugin network wide. ', RW_Remote_Auth_Client::get_textdomain() )
+
+			);
+		}
 		// schedule check
 	    wp_schedule_event( time(), 'twicedaily' , 'rw_auth_remote_check_server' );
         // Flush Rewrite Rules after activation
@@ -61,7 +71,7 @@ class RW_Remote_Auth_Client_Installation {
      * @return  void
      */
     public static function on_deactivation() {
-	    // unschedule check
+	    //unschedule check
 	    $timestamp = wp_next_scheduled( 'rw_auth_remote_check_server' );
 	    wp_unschedule_event( $timestamp, 'rw_auth_remote_check_server' );
 

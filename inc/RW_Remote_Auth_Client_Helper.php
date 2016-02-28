@@ -8,13 +8,44 @@ class RW_Remote_Auth_Client_Helper {
 		// Nur wenn Option gewählt.
 		// @todo Option schaltbar machen
 		// @todo Password Feld
-		add_filter ( 'show_password_fields', array( 'RW_Remote_Auth_Client_Helper', 'show_password_fields' ),9999 );
+		add_filter ( 'show_password_fields', array( 'RW_Remote_Auth_Client_Helper', 'show_password_fields' ),9999,2 );
+
+		if(isset($GLOBALS['CAS_Maestro'])){
+			$CAS_Maestro = $GLOBALS['CAS_Maestro'];
+
+			remove_action('lost_password',              array(&$CAS_Maestro, 'disable_function'));
+			remove_action('retrieve_password',        	array(&$CAS_Maestro, 'disable_function'));
+			remove_action('password_reset',             array(&$CAS_Maestro, 'disable_function'));
+			if( defined('XMLRPC_REQUEST') ){
+				add_action( 'init', function() {
+					remove_filter('authenticate', 	array(&$GLOBALS['CAS_Maestro'], 'validate_login'),30);
+
+				});
+				remove_all_filters('login_url');
+			}
+			add_filter ('cas_maestro_change_users_capability',function($caps){
+				return 'manage_options';
+			});
+			// more strict
+			add_action( 'admin_menu', function(){
+				if(!is_super_admin()){
+					//remove CAS Maestro settings
+					remove_menu_page( 'wpcas_settings' );
+					remove_submenu_page( 'options-general.php', 'wpcas_settings' );
+				}
+
+			},9999);
+
+		}
+
+
 	}
 
 	/**
 	 * @return bool
 	 */
-	static public function show_password_fields() {
+	static public function show_password_fields($show,$profiluser) {
+
 		return true;
 	}
 
@@ -38,7 +69,11 @@ class RW_Remote_Auth_Client_Helper {
 	 */
 	static public function validate_login( ) {
 		if ( ! is_user_logged_in() && ! isset( $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ] ) && isset( $_SERVER['HTTP_REFERER'] ) )  {
-			setcookie( RW_Remote_Auth_Client::$cookie_name, $_SERVER['HTTP_REFERER'], time()+ ( 5 * 60 )  );
+			$referrer = $_SERVER['HTTP_REFERER'];
+			if(strpos($referrer,'/wp-login.php') !== false ){
+				$referrer = home_url();
+			}
+			setcookie( RW_Remote_Auth_Client::$cookie_name, $referrer, time()+ ( 5 * 60 )  );
 		} elseif ( isset( $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ] ) && is_user_logged_in() ) {
 			//Cookie löschen wenn es noch existiert
 			setcookie( RW_Remote_Auth_Client::$cookie_name,  null, time() - ( 60 * 60 ) );
@@ -55,10 +90,11 @@ class RW_Remote_Auth_Client_Helper {
 	 * @return  void
 	 */
 	static public function login_redirect( $redirect_url, $requested_redirect_to, $user ) {
-		wp_set_current_user( $user->ID );
-		wp_set_auth_cookie( $user->ID );
-		do_action( 'wp_login', $user->user_login );
-
+		if(!is_wp_error($user)){
+			wp_set_current_user( $user->ID );
+			wp_set_auth_cookie( $user->ID );
+			do_action( 'wp_login', $user->user_login );
+		}
 		if (  isset( $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ] ) && $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ] != ''  && $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ] != get_site_url() . '/' ) {
 			$redirect_url = $_COOKIE[RW_Remote_Auth_Client::$cookie_name];
 			setcookie( RW_Remote_Auth_Client::$cookie_name,  null, time() - ( 60 * 60 ) );

@@ -5,7 +5,7 @@
  * Plugin URI:       https://github.com/rpi-virtuell/rw_remote_auth_client
  * Description:
  * Author:           Frank Staude
- * Version:          0.1.14
+ * Version:          0.2.0
  * Licence:          GPLv3
  * Author URI:       http://staude.net
  * Text Domain:      rw_remote_auth_client
@@ -22,7 +22,7 @@ class RW_Remote_Auth_Client {
      * @since   0.1
      * @access  public
      */
-    static public $version = "0.1.14";
+    static public $version = "0.2.0";
 
     /**
      * Singleton object holder
@@ -79,7 +79,15 @@ class RW_Remote_Auth_Client {
 	 * @var     string
 	 * @since   0.1.2
 	 * @access  public
-	 */	static public $cookie_name = 'remote_login_referrer';
+	 */
+    static public $cookie_name = 'remote_login_referrer';
+
+    /**
+	 * @var     string
+	 * @since   0.2.0
+	 * @access  public
+	 */
+    static public $notice = '';
 
     /**
      * Plugin constructor.
@@ -107,12 +115,23 @@ class RW_Remote_Auth_Client {
 
         // Add Filter & Actions
 
-        add_action( 'admin_init',           array( 'RW_Remote_Auth_Client_Options', 'register_settings' ) );
-        add_action( 'admin_menu',           array( 'RW_Remote_Auth_Client_Options', 'options_menu' ) );
-	    add_action( 'plugins_loaded',       array( 'RW_Remote_Auth_Client_Helper', 'manipulate_other_plugins' ), 9999 );
+        add_action( 'admin_post_rw_remote_auth_client_network_settings',
+                                                    array( 'RW_Remote_Auth_Client_Options', 'network_settings' ) );
+        add_action( 'admin_init',                   array( 'RW_Remote_Auth_Client_Options', 'register_settings' ) );
+        add_action( 'init',                         array( 'RW_Remote_Auth_Client', 'notice' ) );
+
+        add_action( 'wp_redirect',                  array( 'RW_Remote_Auth_Client_User', 'add_existing_user'),10,2 );
+        add_action( 'wpmu_validate_user_signup',    array( 'RW_Remote_Auth_Client_User', 'create_new_user'),10,1 );
+        add_action( 'user_profile_update_errors',   array( 'RW_Remote_Auth_Client_User', 'add_update_singlesite_user'),10,3 );
+
+        add_action( 'admin_menu',                   array( 'RW_Remote_Auth_Client_Options', 'options_menu' ) );
+        add_action( 'network_admin_menu',           array( 'RW_Remote_Auth_Client_Options', 'options_menu' ) );
+
+        add_action( 'plugins_loaded',               array( 'RW_Remote_Auth_Client_Helper', 'manipulate_other_plugins' ), 9999 );
 	    if ( ! isset( $_GET[ 'wp' ] ) ) { // CAS Maestro Bypass is active
-		    add_action( 'wp_login',             array( 'RW_Remote_Auth_Client_User', 'get_password_from_loginserver' ), 10, 2 );
-		    add_action( 'profile_update',       array( 'RW_Remote_Auth_Client_User', 'change_password_on_login_server' ),10, 2 );
+		    add_action( 'wp_login',                 array( 'RW_Remote_Auth_Client_User', 'set_password_from_loginserver' ), 10, 2 );
+		    add_action( 'profile_update',           array( 'RW_Remote_Auth_Client_User', 'change_password_on_login_server' ),10, 2 );
+		    add_action( 'password_reset',           array( 'RW_Remote_Auth_Client_User', 'reset_password_on_login_server' ),10, 2 );
 		    if ( is_multisite() ) {
 			    add_action( 'wpmu_new_user', array( 'RW_Remote_Auth_Client_User', 'create_mu_user_on_login_server' ) );
 		    } else {
@@ -120,11 +139,15 @@ class RW_Remote_Auth_Client {
 		    }
 	    }
         add_filter( 'plugin_action_links_' . self::$plugin_base_name, array( 'RW_Remote_Auth_Client_Options', 'plugin_settings_link') );
-	    add_filter( 'http_request_args',    array( 'RW_Remote_Auth_Client_Helper', 'http_request_args' ), 9999 );
-	    add_filter( 'login_redirect', array( 'RW_Remote_Auth_Client_Helper', 'login_redirect' ), 10, 3 );
-        add_action( 'login_init',           array( 'RW_Remote_Auth_Client_Helper', 'validate_login' ),1  );
-	    add_action( 'rw_auth_remote_check_server', array( 'RW_Remote_Auth_Client_Installation', 'check_server') );
-	    add_action( 'admin_init',  array( 'RW_Remote_Auth_Client_Helper', 'admin_init' ) );
+
+
+	    add_filter( 'http_request_args',            array( 'RW_Remote_Auth_Client_Helper', 'http_request_args' ), 9999 );
+	    add_filter( 'login_redirect',               array( 'RW_Remote_Auth_Client_Helper', 'login_redirect' ), 10, 3 );
+        add_action( 'login_init',                   array( 'RW_Remote_Auth_Client_Helper', 'validate_login' ),1  );
+	    add_action( 'rw_auth_remote_check_server',  array( 'RW_Remote_Auth_Client_Installation', 'check_server') );
+	    add_filter( 'http_request_args',            array( 'RW_Remote_Auth_Client_User','set_http_request_args'), 999,2);
+	    add_filter( 'user_new_form',                array( 'RW_Remote_Auth_Client_User','user_new_form_check_remote_auth_server'));
+
     }
 
     /**
@@ -222,6 +245,68 @@ class RW_Remote_Auth_Client {
         $plugin_value = $plugin_data[ $value ];
 
         return $plugin_value;
+    }
+    public static function notice( ) {
+        if(isset($_GET['rw_remote_auth_client_update'])){
+
+            self::notice_admin('success',$_GET['rw_remote_auth_client_update']);
+
+        }
+        if(isset($_GET['rw_remote_auth_client_error'])){
+
+            self::notice_admin('error',$_GET['rw_remote_auth_client_error']);
+
+        }
+    }
+    /**
+     * creates an admin notification on admin pages
+     *
+     * @since   0.2.0
+     * @uses     _notice_admin
+     * @access  public
+     * @param label         $value string,  default = 'info'
+     *        error, warning, success, info
+     * @param message       $value string
+     * @param $dismissible  $value bool,  default = false
+     *
+     */
+    public static function notice_admin($label=info, $message, $dismissible=false ) {
+        $notice = array(
+            'label'             =>  $label
+        ,   'message'           =>  $message
+        ,   'is-dismissible'    =>  (bool)$dismissible
+
+        );
+        self::_notice_admin($notice);
+    }
+
+    /**
+     * creates an admin notification on admin pages
+     *
+     * @since   0.2.0
+     * @uses     _notice_admin
+     * @access  private
+     * @param $value array
+     * @link https://codex.wordpress.org/Plugin_API/Action_Reference/admin_notices
+     */
+
+    static function _notice_admin($notice) {
+
+        self::$notice = $notice;
+
+        add_action( 'admin_notices',function(){
+
+            $note = RW_Remote_Auth_Client::$notice;
+            $note['IsDismissible'] =
+                (isset($note['is-dismissible']) && $note['is-dismissible'] == true) ?
+                    ' is-dismissible':'';
+            ?>
+            <div class="notice notice-<?php echo $note['label']?><?php echo $note['IsDismissible']?>">
+                <p><?php echo __( $note['message'] ,RW_Remote_Auth_Client::get_textdomain() ); ?></p>
+            </div>
+            <?php
+        });
+
     }
 }
 
