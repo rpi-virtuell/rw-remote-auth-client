@@ -3,20 +3,92 @@
 class RW_Remote_Auth_Client_User {
 
 
-
+    /**
+     * @use wp_remote_get
+     * @param $json
+     * @return stdClass (response data) || WP_Error
+     */
 
 	static function remote_get( $json ){
 
-		return wp_remote_get(RW_Remote_Auth_Client_Options::get_loginserver_endpoint() . $json );
+        $error = false;
+
+        if(!is_string($json)){
+            try{
+                $json = rawurlencode( json_encode( $json) );
+            }catch(Exception $e){
+                $error = __('Error: Server can not encode server response.', RW_Remote_Auth_Client::get_textdomain());
+            }
+        }
+
+        //validat the answer
+        $response = wp_remote_get(RW_Remote_Auth_Client_Options::get_loginserver_endpoint() . $json );
+        if ( !is_wp_error( $response ) ) {
+            if(
+                isset($response['headers']["content-type"]) && strpos($response['headers']["content-type"],'application/json') !==false )
+            {
+                try {
+                    $json = json_decode($response['body']);
+                    if (is_a($json, 'stdClass') && isset($json->errors) && $json->errors ) {
+                        $sever_error = $json->errors;
+                        if(is_a($sever_error,'stdClass')){
+                            $error = $sever_error->message;
+                            $data = $sever_error->data;
+                            if($data->rw_remote_auth_api_key){
+                                // remote auth service suspends client and sends a new api-key
+                                // save the new api-key in the options
+                                update_site_option('rw_remote_auth_client_api_key',$data->rw_remote_auth_api_key);
+                            }
+                        }else{
+                            $error  = $sever_error;
+                        }
+
+                    }else{
+                        return $json;
+                    }
+
+                } catch ( Exception $ex ) {
+                    $error = __('Error: Can not decode response.', RW_Remote_Auth_Client::get_textdomain());
+                }
+            }else{
+                $error =  __('Error. Wrong Content Type. Check the API Server Endpoint', RW_Remote_Auth_Client::get_textdomain()) ;
+            }
+
+        }else{
+            $error =  __('Error. Check the API Server Endpoint URL in the Settingspage', RW_Remote_Auth_Client::get_textdomain()) ;
+        }
+        $data = isset($data)?$data:$response;
+        return new WP_Error('remote_auth_response',$error, $response);
 	}
 
+    /**
+     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     * sets special user_agent infos for connecting with remote auth server
+     * deals with wp_remote_get
+     *
+     * @user_agend_args: (seperated by ; )
+     *
+     *         Clientinfos  ( Class Version )
+     *         api_key      ( option )
+     *         domain       ( setted domain of multisite or songlesite )
+     *         IP           ( of the hosting server )
+     *
+     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     * @param $args
+     * @param $url
+     * @return mixed
+     *
+     * @usefilter http_request_args
+     */
 	static function set_http_request_args($args, $url){
 
 		if( strpos( urldecode($url),RW_Remote_Auth_Client_Options::get_loginserver_endpoint() ) !== false ){
 
-			$domain = parse_url(get_bloginfo( 'url' ), PHP_URL_HOST);
-			$key = get_site_option('rw_remote_auth_client_api_key');
-			$args['user-agent']=  'RW_Remote_Auth_Client '.RW_Remote_Auth_Client::$version	.';' . $domain .';'. $_SERVER['SERVER_ADDR'] .';'. $key;
+			$domain = parse_url(network_site_url( ), PHP_URL_HOST);
+            $key = get_site_option('rw_remote_auth_client_api_key');
+
+			//modify user-agent with @user_agend_args
+            $args['user-agent']=  'RW_Remote_Auth_Client '.RW_Remote_Auth_Client::$version	.';' . $domain .';'. $_SERVER['SERVER_ADDR'] .';'. $key;
 
 			$args['sslverify']=  false;
 
@@ -25,6 +97,46 @@ class RW_Remote_Auth_Client_User {
 		return $args;
 	}
 
+	/**
+	 *  Test the server connection
+     *
+	 * @return stdClass( $notice, $answer )
+     *
+	 */
+	public static function remote_say_hello(  ) {
+
+        $request = array(   'cmd' => 'say_hello',
+			'data' => array (
+				'question' => 'Can you here me'
+			)
+		);
+        $response = self::remote_get( $request );
+        if(is_wp_error($response) || !isset($response->data) || $response->data === false ){
+
+            $data = new stdClass();
+            $data->notice = 'error';
+
+            if(!isset($response->data) && ! is_wp_error($response) ){     //unknown error
+
+                $data->notice = 'error';
+                $data->answer = 'Serveresponse: '.json_encode($response);
+
+            }elseif(isset($response->data) && $response->data === false) { //whitelisting is not active
+
+                $data->answer = 'it works';
+                $data->notice = 'info';
+
+            }else{
+                $data->answer = $response->get_error_message();
+                $data->data =   $response->get_error_data();
+            }
+
+
+            return $data;
+
+        }
+        return  $response->data;
+	}
 
 	/**
 	 * @param $errors
@@ -66,6 +178,7 @@ class RW_Remote_Auth_Client_User {
 
 	/**
 	 * @param $user_id
+     * return bool
 	 */
 	public static function create_mu_user_on_login_server ( $user_id ) {
 		global $wpdb;
@@ -85,8 +198,9 @@ class RW_Remote_Auth_Client_User {
                 // system generated password on new users via backend created
                 $password =$user->user_pass;
             }
-			self::remote_user_register($user->user_login, $user->user_email, $password );
+			return self::remote_user_register($user->user_login, $user->user_email, $password );
 		}
+        return false;
 	}
 
 	/**
@@ -94,7 +208,7 @@ class RW_Remote_Auth_Client_User {
 	 */
 	public static function create_user_on_login_server ( $user_id ) {
 		$user = get_user_by( 'id', $user_id );
-		self::remote_user_register($user->user_login, $user->user_email, $user->user_pass );
+		return self::remote_user_register($user->user_login, $user->user_email, $user->user_pass );
 	}
 
 	/**
@@ -105,8 +219,9 @@ class RW_Remote_Auth_Client_User {
 		$new_user = get_user_by( 'id', $user_id );
 		if ( $new_user->user_pass != $old_user->user_pass ) {
 			// password changed
-			self::remote_change_password( $new_user->user_login, $old_user->user_pass, $new_user->user_pass );
+            return self::remote_change_password( $new_user->user_login, $old_user->user_pass, $new_user->user_pass );
 		}
+        return false;
 	}
 
     /**
@@ -117,15 +232,16 @@ class RW_Remote_Auth_Client_User {
 
         $oldpassword = '';
         $newpassword = wp_hash_password($password);
-        $data = json_decode( self::remote_user_get_password( $user->user_login ) );
-        $oldpassword = $data->password;
+        $oldpassword =  self::remote_user_get_password( $user->user_login ) ;
+
 
         // password changed
         if(!self::remote_change_password( $user->user_login, $oldpassword, $newpassword )){
-            //create error message remote_change_password faild
+
+            return false;
         }
 
-
+        return true;
 
     }
 
@@ -144,12 +260,7 @@ class RW_Remote_Auth_Client_User {
         $json = urlencode( json_encode( $request ) );
         $response = self::remote_get( $json );
 	    if ( !is_wp_error( $response ) ) {
-	        try {
-	            $json = json_decode( $response['body'] );
-	        } catch ( Exception $ex ) {
-	            return null;
-	        }
-	        return $json->message;
+	       return $response->message;
 	    }
 	    return false;
     }
@@ -159,7 +270,7 @@ class RW_Remote_Auth_Client_User {
 	 * @param $user_email
 	 * @param string $user_password
 	 *
-	 * @return null
+	 * @return bool
 	 */
     public static function remote_user_register( $sanitized_user_login, $user_email, $user_password = '' ) {
 	    if ( ! RW_Remote_Auth_Client_User::remote_user_exists( $sanitized_user_login ) ) {
@@ -174,17 +285,13 @@ class RW_Remote_Auth_Client_User {
 
 		    $json = rawurlencode( json_encode( $request ) );
 
-		    $response = self::remote_get( $json, array( 'sslverify' => false ) );
-		    if ( !is_wp_error( $response ) ) {
-			    try {
-				    $json = json_decode( $response['body'] );
-			    } catch ( Exception $ex ) {
-				    return null;
-			    }
+		    $response = self::remote_get( $json  );
+            if ( !is_wp_error( $response ) ) {
 
-			    return $json->message;
+                return $response->message;
 		    }
 	    }
+
 	    return false;
     }
 
@@ -196,7 +303,7 @@ class RW_Remote_Auth_Client_User {
 	 * @param $user_old_password
 	 * @param $user_new_password
 	 *
-	 * @return null
+	 * @return bool
 	 */
 	public static function remote_change_password( $user_login, $user_old_password, $user_new_password ) {
 		$request = array(   'cmd' => 'user_change_password',
@@ -209,26 +316,22 @@ class RW_Remote_Auth_Client_User {
 		$json = rawurlencode( json_encode( $request ) );
 		$response = self::remote_get( $json );
         if ( !is_wp_error( $response ) ) {
-			try {
-				$json = json_decode( $response['body'] );
-			} catch ( Exception $ex ) {
-				return null;
-			}
+            return $response->message;
+        }
 
-			return $json->message;
-		}
 		return false;
 	}
 
 	/**
 	 * @param $user_login
 	 * @param $user
+     * @return bool
 	 */
 	public static function set_password_from_loginserver( $user_login, $user ) {
 		global $wpdb;
 		if ( get_site_option( 'rw_remote_auth_client_bypass_admin' ) != 1 || ( get_site_option( 'rw_remote_auth_client_bypass_admin' ) == 1 &&   !current_user_can( 'Administrator' ) && !current_user_can( 'Super Admin' ) ) ) {
-			$data = json_decode( self::remote_user_get_password( $user->user_login ) );
-			$wpdb->update(
+			$data = self::remote_user_get_password( $user->user_login , true);
+            $pw_setted = $wpdb->update(
 				$wpdb->users,
 				array(
 					'user_pass' => urldecode( $data->password ),
@@ -248,15 +351,21 @@ class RW_Remote_Auth_Client_User {
 					)
 				);
 			}
+            if($pw_setted){
+                return true;
+            }
 		}
+        return false;
 	}
+
 
 	/**
 	 * @param $username
-	 *
-	 * @return null
+	 * @param bool
+     *
+     * @return string|stdClass|bool
 	 */
-	public static function remote_user_get_password( $username ) {
+	public static function remote_user_get_password( $username,$send_userdata = false ) {
 		$request = array(   'cmd' => 'user_get_password',
 		                    'data' => array (
 			                    'user_name' => $username
@@ -264,20 +373,26 @@ class RW_Remote_Auth_Client_User {
 		);
 		$json = urlencode( json_encode( $request ) );
 		$response = self::remote_get( $json );
-		if ( !is_wp_error( $response ) ) {
-			try {
-				$json = json_decode( $response['body'] );
-			} catch ( Exception $ex ) {
-				return null;
-			}
+        if ( !is_wp_error( $response ) ) {
+            if($send_userdata){
+                return json_decode($response->data);
+            }else{
+                return $response->message;
+            }
 
-			return $json->message;
-		}
+        }
+
 		return false;
 	}
 
 
-	public static function remote_user_get_data( $username ) {
+    /**
+     * @param $username
+     * @param bool
+     *
+     * @return stdClass|bool
+     */
+    public static function remote_user_get_data( $username ) {
 		$request = array(   'cmd' => 'user_get_details',
 			'data' => array (
 				'user_name' => $username
@@ -287,22 +402,11 @@ class RW_Remote_Auth_Client_User {
 		$json = urlencode( json_encode( $request ) );
 		$response = self::remote_get( $json );
 		if ( !is_wp_error( $response ) ) {
-			try {
-				$json = json_decode( $response['body'] );
-			} catch ( Exception $ex ) {
-                return null;
-			}
-			if(is_a($json,'stdClass')){
-                return $json->data;
-			}else{
-				$error = new stdClass();
-				$error->error='Fehler bei der Verbindung mit dem Authorisierungsserver';
-				return $error;
-			}
-
+		    return $response->data;
 		}else{
-			//var_dump($response);die();
-		}
+            $data = newClass();
+            $data->error = $response->get_error_message();
+        }
 		return false;
 	}
 
@@ -363,11 +467,6 @@ class RW_Remote_Auth_Client_User {
             //correct server response returns an object
             $data = self::remote_user_get_data($login);
 
-            if (!is_a($data,'stdClass')) { //none object, that might be an connection error
-
-                $return_url ='user-new.php?rw_remote_auth_client_error=' .
-                urlencode( __('Error: could not connect to Remote Auth Server', RW_Remote_Auth_Client::get_textdomain()) );
-            }
             if (isset($data->error)) {   //object contains an error message
 
                 $return_url ='user-new.php?rw_remote_auth_client_error=' . urlencode($data->error);
@@ -383,6 +482,7 @@ class RW_Remote_Auth_Client_User {
                     'user_pass' => $data->user_password,
                     'user_email' => $data->user_email,
                     'user_registered' => date('Y-m-d H:i:s')
+
                 );
 
                 //insert client user with the response data from auth server

@@ -25,7 +25,8 @@ class RW_Remote_Auth_Client_Options {
         register_setting( 'rw_remote_auth_client_options', 'rw_remote_auth_client_options_server_endpoint_url' );
         register_setting( 'rw_remote_auth_client_options', 'rw_remote_auth_client_register_redirect_url' );
 	    register_setting( 'rw_remote_auth_client_options', 'rw_remote_auth_client_bypass_admin' );
-	    register_setting( 'rw_remote_auth_client_options', 'rw_remote_auth_client_api_key' );
+        //Do not set manually!
+	    #register_setting( 'rw_remote_auth_client_options', 'rw_remote_auth_client_api_key' );
 
     }
     /**
@@ -48,7 +49,8 @@ class RW_Remote_Auth_Client_Options {
             'rw_remote_auth_client_options_server_endpoint_url',
             'rw_remote_auth_client_register_redirect_url',
             'rw_remote_auth_client_bypass_admin',
-            'rw_remote_auth_client_api_key',
+            //Do not set manually!
+            //'rw_remote_auth_client_api_key',
         );
 
         foreach($options as $option){
@@ -74,8 +76,15 @@ class RW_Remote_Auth_Client_Options {
      * @return  array
      */
     static public function plugin_settings_link( $links ) {
-        $settings_link = '<a href="options-general.php?page=' . RW_Remote_Auth_Client::$plugin_base_name . '">' . __( 'Settings' )  . '</a>';
-        array_unshift($links, $settings_link);
+        if(is_multisite()){
+            $settings_link = '<a href="network/settings.php?page=' . RW_Remote_Auth_Client::$plugin_base_name . '">' . __( 'Settings' )  . '</a>';
+            if(is_super_admin()){
+                array_unshift($links, $settings_link);
+            }
+        }else{
+            $settings_link = '<a href="options-general.php?page=' . RW_Remote_Auth_Client::$plugin_base_name . '">' . __( 'Settings' )  . '</a>';
+            array_unshift($links, $settings_link);
+        }
         return $links;
     }
 
@@ -144,6 +153,8 @@ class RW_Remote_Auth_Client_Options {
      */
     static public function create_options() {
 
+        $servercheck = RW_Remote_Auth_Client_User::remote_say_hello();
+
         if(is_multisite()){
             $form_action = admin_url('admin-post.php?action=rw_remote_auth_client_network_settings');
         }else{
@@ -160,12 +171,19 @@ class RW_Remote_Auth_Client_Options {
             $server_endpoint_url = RW_REMOTE_AUTH_SERVER_API_ENDPOINT;
             $server_endpoint_disabled = ' disabled ';
         }
+
         ?>
         <div class="wrap"  id="rwremoteauthserveroptions">
             <h2><?php _e( 'Remote Auth Client Options', RW_Remote_Auth_Client::$textdomain ); ?></h2>
             <p><?php _e( 'Settings for Remote Auth Server', RW_Remote_Auth_Client::$textdomain ); ?></p>
             <form method="POST" action="<?php echo $form_action; ?>"><fieldset class="widefat">
+
+                    <div class="notice notice-<?php echo $servercheck->notice ;?>">
+                        <p><strong><?php echo $servercheck->answer;?></strong></p>
+                    </div>
                     <?php
+
+
                     if(is_multisite()){
                         wp_nonce_field('rw_remote_auth_client_network_settings');
                     }else{
@@ -188,8 +206,8 @@ class RW_Remote_Auth_Client_Options {
                                 <label for="rw_remote_auth_client_api_key"><?php _e( 'API Key', RW_Remote_Auth_Client::$textdomain ); ?></label>
                             </th>
                             <td>
-                                <input id="rw_remote_auth_client_api_key" class="regular-text" type="text" value="<?php echo get_site_option( 'rw_remote_auth_client_api_key' ); ?>" aria-describedby="rw_remote_auth_client_api_key" name="rw_remote_auth_client_api_key" >
-                                <p id="api_key-description" class="description"><?php _e( 'get a api key form loginserver admin', RW_Remote_Auth_Client::$textdomain); ?></p>
+                                <input id="rw_remote_auth_client_api_key" class="regular-text" type="text" value="<?php echo get_site_option( 'rw_remote_auth_client_api_key' ); ?>" aria-describedby="rw_remote_auth_client_api_key" disabled>
+                                <p id="api_key-description" class="description"><?php _e( 'Entered by auth service', RW_Remote_Auth_Client::$textdomain); ?></p>
                             </td>
                         </tr>
                         <tr>

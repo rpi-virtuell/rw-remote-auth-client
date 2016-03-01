@@ -5,7 +5,7 @@
  * Plugin URI:       https://github.com/rpi-virtuell/rw_remote_auth_client
  * Description:
  * Author:           Frank Staude
- * Version:          0.2.0
+ * Version:          0.2.1
  * Licence:          GPLv3
  * Author URI:       http://staude.net
  * Text Domain:      rw_remote_auth_client
@@ -22,7 +22,7 @@ class RW_Remote_Auth_Client {
      * @since   0.1
      * @access  public
      */
-    static public $version = "0.2.0";
+    static public $version = "0.2.1";
 
     /**
      * Singleton object holder
@@ -147,6 +147,10 @@ class RW_Remote_Auth_Client {
 	    add_action( 'rw_auth_remote_check_server',  array( 'RW_Remote_Auth_Client_Installation', 'check_server') );
 	    add_filter( 'http_request_args',            array( 'RW_Remote_Auth_Client_User','set_http_request_args'), 999,2);
 	    add_filter( 'user_new_form',                array( 'RW_Remote_Auth_Client_User','user_new_form_check_remote_auth_server'));
+
+        //only for remotetest
+        add_action( 'admin_init',                    array( 'RW_Remote_Auth_Client_Test', 'init' ) );
+
 
     }
 

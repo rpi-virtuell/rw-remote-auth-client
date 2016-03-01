@@ -3,7 +3,7 @@ Contributors: f.staude, j.happel
 Tags: singleSignOn, wordpress network, cloud blogging
 Requires at least: 4.0
 Tested up to: 4.4.2
-Stable tag: 0.1.14
+Stable tag: 0.2.1
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -37,6 +37,13 @@ Answer
 
 
 == Changelog ==
+= 0.2.1
+* add connection check
+* add automatic api-key fetcher
+* add error messaging from authserver in admin UI
+* add several tests
+* minor fixes
+
 = 0.2.0
 * add api key
 * multisite settingspage
