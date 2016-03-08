@@ -118,6 +118,7 @@ class RW_Remote_Auth_Client {
         add_action( 'admin_post_rw_remote_auth_client_network_settings',
                                                     array( 'RW_Remote_Auth_Client_Options', 'network_settings' ) );
         add_action( 'admin_init',                   array( 'RW_Remote_Auth_Client_Options', 'register_settings' ) );
+        add_action( 'admin_menu',                   array( 'RW_Remote_Auth_Client_BPGroup', 'add_adminpage' ) );
         add_action( 'init',                         array( 'RW_Remote_Auth_Client', 'notice' ) );
 
         add_action( 'wp_redirect',                  array( 'RW_Remote_Auth_Client_User', 'add_existing_user'),10,2 );
