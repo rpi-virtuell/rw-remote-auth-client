@@ -12,14 +12,23 @@
  *
  * requires the plugin rw-blog-group-server installed on the buddypress host
  *
- * send a remote json request to the buddypress host
+ * send a remote json request to the buddypress host to fetch group data
  *     1. url of the buddypress group
+ *     2. user_login of the blog admin
+ *
+ * send a remote json request to the buddypress host to fetch group data
+ *     1. group_id     (group slug may be not persistent)
  *     2. user_login of the blog admin
  *
  * exprect a json width a
  *    1. list of the member
  *    2. group details (slug,name,id,host)
- *    3. or error msg
+ *    or
+ *      response error messages (http error code) can be
+ *      - admin is not a member (403)
+ *      - group not found or deleted (404)
+ *      - invalid request (406)
+ *      - no json (405)
  *
  * on success
  *    1. adds member of a external buddypress group to a blog
