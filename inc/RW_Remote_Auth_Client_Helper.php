@@ -94,6 +94,8 @@ class RW_Remote_Auth_Client_Helper {
 			wp_set_current_user( $user->ID );
 			wp_set_auth_cookie( $user->ID );
 			do_action( 'wp_login', $user->user_login );
+		}else{
+			//@TODO handle error
 		}
 		if (  isset( $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ] ) && $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ] != ''  && $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ] != get_site_url() . '/' ) {
 			$redirect_url = $_COOKIE[RW_Remote_Auth_Client::$cookie_name];
