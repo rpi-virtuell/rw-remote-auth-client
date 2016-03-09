@@ -70,8 +70,8 @@ class RW_Remote_Auth_Client_BPGroup
      *      group->members = array{
      *
      *          stdClass Member:
-     *              Member->name
-     *              Member->url
+     *              Member->login_name
+     *              Member->profil_url
      *
      *      )
      *
@@ -83,9 +83,11 @@ class RW_Remote_Auth_Client_BPGroup
         $group = json_decode( base64_decode($hash) ) ;
 
         $args = array(
-            'admin'=>$admin->user_login,
-            'group_id'=>$group->group_id,
-            'cmd'=>'get_group'
+            'cmd'=>'get_group',
+             'data'=>array(
+                 'admin'=>$admin->user_login,
+                 'group_id'=>$group->group_id
+             )
         );
 
         return self::remote_get( $group->url , $args );
@@ -106,11 +108,14 @@ class RW_Remote_Auth_Client_BPGroup
 
 
         $args = array(
-            'siteurl'=>get_home_url(),
-            'blogname'=>$blog->blogname,
             'cmd'=>'add_blog',
-            'success'=>true,
-            'group_id'=>$group->group_id
+            'data'=>array(
+                'site_url'=>get_home_url(),
+                'feed_url'=>$blog->rss2_url,
+                'comments_url'=>$blog->comments_rss2_url,
+                'blogname'=>$blog->blogname,
+                'success'=>true,
+                'group_id'=>$group->group_id,)
         );
 
         return self::remote_get( $group->url , $args );
@@ -155,7 +160,8 @@ class RW_Remote_Auth_Client_BPGroup
                     $error = __('Error: Can not decode response.', RW_Remote_Auth_Client::get_textdomain());
                 }
             }else{
-                $error = __('Error: No valid server response.', RW_Remote_Auth_Client::get_textdomain());
+                $error = __('Error: No valid server response. Context Type: '. $response['headers']["content-type"], RW_Remote_Auth_Client::get_textdomain());
+
             }
         }
 
@@ -200,8 +206,8 @@ class RW_Remote_Auth_Client_BPGroup
         }
 
         $sample_hash = array(
-            'group_id' => 123,
-            'url' => 'http://gruppen.rpi-virtuell.de'
+            'group_id' => 3,
+            'url' => 'http://lernlog.de/rw_groupinfo/'
         );
         $hash = base64_encode( json_encode( $sample_hash ) );
         $form_action = admin_url('users.php?page=rw_remote_auth_client_bpgroups');
@@ -327,13 +333,13 @@ class RW_Remote_Auth_Client_BPGroup
                 $user = get_user_by('user_login');
                 if(!$user){
                     $user = (object) array(
-                        'name'=>$member->name . '  (not a blog member)'
+                        'name'=>$member->login_name . '  (not a blog member)'
                     );
-                    self::add_member_to_blog($member->name);
+                    self::add_member_to_blog($member->login_name);
                 }
                 ?>
                 <li>
-                    <a href="<?php echo $member->url ;?>"><?php echo $user->display_name ;?></a>
+                    <a href="<?php echo $member->profil_url ;?>"><?php echo $user->display_name ;?></a>
                 </li>
                 <?php
             }
@@ -381,6 +387,7 @@ class RW_Remote_Auth_Client_BPGroup
 
         $option[ $hash ] = 1;
 
+       // delete_option('rw_remote_auth_client_bpgroups');
         update_option('rw_remote_auth_client_bpgroups',$option);
 
         self::send_success($hash);
