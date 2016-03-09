@@ -94,6 +94,7 @@ class RW_Remote_Auth_Client_BPGroup
 
     }
 
+
     /**
      * send the cmd 'add_blog' to the remote gorup server
      *
@@ -104,7 +105,7 @@ class RW_Remote_Auth_Client_BPGroup
 
         $group = json_decode( base64_decode($hash) ) ;
 
-        $blog = get_blog_details(1);
+        $blog = get_bloginfo_rss(get_current_blog_id());
 
 
         $args = array(
@@ -118,7 +119,7 @@ class RW_Remote_Auth_Client_BPGroup
                 'group_id'=>$group->group_id,)
         );
 
-        return self::remote_get( $group->url , $args );
+        return self::remote_get(  $group->url , $args );
 
     }
 
@@ -130,7 +131,12 @@ class RW_Remote_Auth_Client_BPGroup
      */
     protected static function  remote_get( $url, $args ){
 
-        $json =  json_encode( $args) ;
+        $endpoint = '/rwgroupinfo';
+        if(!strpos($endpoint, $url)){
+            $url .= $endpoint;
+        }
+
+        $json =  rawurlencode( json_encode( $args) ) ;
         $response = wp_remote_get($url .'/'. $json , array(
             'sslverify'=>false
         ));
@@ -161,7 +167,12 @@ class RW_Remote_Auth_Client_BPGroup
                 }
             }else{
                 $error = __('Error: No valid server response. Context Type: '. $response['headers']["content-type"], RW_Remote_Auth_Client::get_textdomain());
-
+                echo '<pre>';
+                echo 'url: ';
+                echo $url .'/'. $json;
+                echo '<br>';
+                var_dump($response['body']);
+                echo '</pre>';
             }
         }
 
@@ -185,7 +196,10 @@ class RW_Remote_Auth_Client_BPGroup
      * Print the adminpage
      */
     public static function the_adminpage(){
-        ?>
+        
+		//delete_option('rw_remote_auth_client_bpgroups');
+        
+		?>
         <h2>
             <?php echo __('Add group member from an external buddypress group', RW_Remote_Auth_Client::get_textdomain()); ?>
         </h2>
@@ -202,7 +216,22 @@ class RW_Remote_Auth_Client_BPGroup
         if(isset($_POST['rw_remote_auth_client_bpgroups_code'])){
             check_admin_referer('rw_remote_auth_client_bpgroups_addnew');
             $hash = trim($_POST['rw_remote_auth_client_bpgroups_code']);
-            self::set_hash($hash);
+
+            $group = self::get_group( $hash );
+            if(!is_wp_error($group)){
+
+                if(isset($group->message)){
+                    //an error message from blogserver
+                    echo '<b style="color:red">Anfrage abgelehnt. Grund: '. $group->message.'</b>';
+
+                    RW_Remote_Auth_Client::notice('error', $group->message);
+
+                    self::remove_hash($hash);
+
+                }else{
+                    self::set_hash($hash);
+                }
+            }
         }
 
         $sample_hash = array(
@@ -223,7 +252,7 @@ class RW_Remote_Auth_Client_BPGroup
                         <label for="rw_remote_auth_client_bpgroups_code"><?php _e( 'Group Code', RW_Remote_Auth_Client::$textdomain ); ?></label>
                     </th>
                     <td>
-                        <textarea style="max-width:500px; width:100%" name="rw_remote_auth_client_bpgroups_code" id="rw_remote_auth_client_bpgroups_code" aria-describedby="bpgroups_code-description"><?php echo $hash;?></textarea>
+                        <textarea style="max-width:500px; width:100%" name="rw_remote_auth_client_bpgroups_code" id="rw_remote_auth_client_bpgroups_code" aria-describedby="bpgroups_code-description"><?php //echo $hash;?></textarea>
                         <p id="bpgroups_code-descriptio" class="description"><?php _e( 'Copy the code from the "External Blogs" page in your group manage page.', RW_Remote_Auth_Client::$textdomain); ?></p>
                     </td>
                 </tr>
@@ -295,8 +324,8 @@ class RW_Remote_Auth_Client_BPGroup
         if($groups){
             foreach($groups as $key=>$group ){
 
-                self::the_group( (object) $group);
-                self::the_members( (object) $group);
+                self::the_group((object)$group);
+                self::the_members((object)$group);
 
             }
         }
@@ -311,15 +340,15 @@ class RW_Remote_Auth_Client_BPGroup
         ?>
         <h3>
             <?php if(isset( $group->url )):?>
-            <a href="<?php echo $group->url;?>">
-                <?php echo $group->name;?>
-            </a>
+                <a href="<?php echo $group->url;?>">
+                    <?php echo $group->name;?>
+                </a>
             <?php else: ?>
                 <?php echo $group->name;?>
             <?php endif; ?>
         </h3>
         <?php
-    }
+   }
 
     /**
      * Print a list of group members
@@ -361,15 +390,17 @@ class RW_Remote_Auth_Client_BPGroup
         $groups = array();
 
         foreach( $hashes as $hash=>$active ){
-
             $group = self::get_group( $hash );
             if(is_wp_error($group)){
 
                 $group = (object) array(
                     'name'=>$group->get_error_message()
                 );
+            }else{
+                $groups[] = $group;
             }
-            $groups[] = $group;
+
+
         }
         return $groups;
 
@@ -387,11 +418,16 @@ class RW_Remote_Auth_Client_BPGroup
 
         $option[ $hash ] = 1;
 
-       // delete_option('rw_remote_auth_client_bpgroups');
         update_option('rw_remote_auth_client_bpgroups',$option);
 
         self::send_success($hash);
 
+    }
+
+    protected static function remove_hash($hash){
+        $option = get_option('rw_remote_auth_client_bpgroups');
+        unset($option[ $hash ]);
+        update_option('rw_remote_auth_client_bpgroups',$option);
     }
 
 }
