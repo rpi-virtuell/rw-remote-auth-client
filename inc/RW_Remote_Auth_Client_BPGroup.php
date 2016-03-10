@@ -102,19 +102,15 @@ class RW_Remote_Auth_Client_BPGroup
      * @return object|WP_Error
      */
     protected static function send_success( $hash ){
-
         $group = json_decode( base64_decode($hash) ) ;
-
         $blog = get_bloginfo_rss(get_current_blog_id());
-
-
         $args = array(
             'cmd'=>'add_blog',
             'data'=>array(
-                'site_url'=>get_home_url(),
-                'feed_url'=>$blog->rss2_url,
-                'comments_url'=>$blog->comments_rss2_url,
-                'blogname'=>$blog->blogname,
+                'site_url' => get_home_url(),
+                'feed_url' => get_bloginfo_rss( 'rss_url'),
+                'comments_url' => get_bloginfo_rss( 'comments_rss2_url'),
+                'blogname'=> bloginfo( 'name'),
                 'success'=>true,
                 'group_id'=>$group->group_id,)
         );
@@ -130,15 +126,15 @@ class RW_Remote_Auth_Client_BPGroup
      * @return object|WP_Error
      */
     protected static function  remote_get( $url, $args ){
-
         $endpoint = '/rwgroupinfo';
         if(!strpos($endpoint, $url)){
             $url .= $endpoint;
         }
 
-        $json =  rawurlencode( json_encode( $args) ) ;
-        $response = wp_remote_get($url .'/'. $json , array(
-            'sslverify'=>false
+        $response = wp_remote_post($url .'/add_blog'  , array(
+            'sslverify'=>false,
+            'timeout' =>60,
+            'body' => $args
         ));
         if(is_wp_error($response)){
             $error = $response->get_error_message();
@@ -268,19 +264,17 @@ class RW_Remote_Auth_Client_BPGroup
 
 
     /**
-     * Add an existing user from login server     *
+     * Add an existing user from login server     
+     *
      * @param $user_login
      * @use RW_Remote_Auth_Client_User::add_existing_user_from_auth_server
      */
-    protected static function add_member_to_blog($user_login){
-
+    protected static function add_member_to_blog($user_login) {
         $data = RW_Remote_Auth_Client_User::remote_user_get_data($user_login);
-
         if (isset($data->error)) {   //object contains an error message
-
             $error = _('Could not get Userdata from login server', RW_Remote_Auth_Client::get_textdomain() );
 
-        }elseif(isset($data->exists) && $data->exists  ) { //object returns an exists flag
+        } elseif(isset($data->exists) && $data->exists  ) { //object returns an exists flag
 
             //create a valid set of values als args for wp_insert_user
             $user_details = array(
@@ -294,26 +288,15 @@ class RW_Remote_Auth_Client_BPGroup
 
             );
 
-
-
-            //insert client user with the response data from auth server
-            if ($user_id = wp_insert_user($user_details)) {
-
-                add_user_to_blog(  get_current_blog_id(), $user_id , 'author');
-
-
-
-            }else{
-
-                $error = sprintf(
-                    __('User "%s" was not added to your site', RW_Remote_Auth_Client::get_textdomain())
-                    ,$user_login
-                );
-
+            // check for local user on other blogs
+            $user = get_user_by( 'login', $data->user_login );
+            if ( $user === false  ) {
+                $user = wp_insert_user($user_details);
+            }
+            if ( !is_user_member_of_blog( $user->ID, get_current_blog_id() ) ) {
+                add_user_to_blog(  get_current_blog_id(), $user->ID , 'author');
             }
         }
-
-
     }
 
     /**
@@ -323,13 +306,10 @@ class RW_Remote_Auth_Client_BPGroup
         $groups = self::get_option_groups();
         if($groups){
             foreach($groups as $key=>$group ){
-
                 self::the_group((object)$group);
                 self::the_members((object)$group);
-
             }
         }
-
     }
 
     /**
@@ -356,8 +336,8 @@ class RW_Remote_Auth_Client_BPGroup
      *
      */
     protected static function the_members( $group ){
-        if(isset($group->member)){
-            $members =  $group->member;
+        if(isset($group->data->member)){
+            $members =  $group->data->member;
             foreach($members as $member){
                 $user = get_user_by('user_login');
                 if(!$user){
@@ -386,6 +366,7 @@ class RW_Remote_Auth_Client_BPGroup
         $hashes =  get_option('rw_remote_auth_client_bpgroups') ;
 
         if(!$hashes) return false;
+
 
         $groups = array();
 
