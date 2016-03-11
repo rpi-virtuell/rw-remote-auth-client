@@ -103,7 +103,6 @@ class RW_Remote_Auth_Client_BPGroup
      */
     protected static function send_success( $hash ){
         $group = json_decode( base64_decode($hash) ) ;
-        $blog = get_bloginfo_rss(get_current_blog_id());
         $args = array(
             'cmd'=>'add_blog',
             'data'=>array(
@@ -130,7 +129,6 @@ class RW_Remote_Auth_Client_BPGroup
         if(!strpos($endpoint, $url)){
             $url .= $endpoint;
         }
-
         $response = wp_remote_post($url .'/add_blog'  , array(
             'sslverify'=>false,
             'timeout' =>60,
@@ -144,7 +142,7 @@ class RW_Remote_Auth_Client_BPGroup
                     && strpos($response['headers']["content-type"],'application/json') !==false
             ){
                 try {
-                    $json = json_decode($response['body']);
+                    $json = json_decode($response['body'] );
                     if (is_a($json, 'stdClass') && isset($json->errors) && $json->errors ) {
                         $sever_error = $json->errors;
                         if(is_a($sever_error,'stdClass')){
@@ -234,7 +232,7 @@ class RW_Remote_Auth_Client_BPGroup
             'group_id' => 3,
             'url' => 'http://lernlog.de/rw_groupinfo/'
         );
-        $hash = base64_encode( json_encode( $sample_hash ) );
+        //$hash = base64_encode( json_encode( $sample_hash ) );
         $form_action = admin_url('users.php?page=rw_remote_auth_client_bpgroups');
         ?>
         <form method="post" action="<?php echo $form_action; ?>">
@@ -285,7 +283,6 @@ class RW_Remote_Auth_Client_BPGroup
                 'user_pass' => $data->user_password,
                 'user_email' => $data->user_email,
                 'user_registered' => date('Y-m-d H:i:s')
-
             );
 
             // check for local user on other blogs
@@ -303,11 +300,12 @@ class RW_Remote_Auth_Client_BPGroup
      * Displays a loop of all member
      */
     public static function groups_loop(){
+
         $groups = self::get_option_groups();
         if($groups){
             foreach($groups as $key=>$group ){
-                self::the_group((object)$group);
-                self::the_members((object)$group);
+                self::the_group((object)$group->data->group);
+                self::the_members((object)$group->data->member);
             }
         }
     }
@@ -336,16 +334,16 @@ class RW_Remote_Auth_Client_BPGroup
      *
      */
     protected static function the_members( $group ){
-        if(isset($group->data->member)){
-            $members =  $group->data->member;
+        if(isset($group)){
+            $members =  $group;
             foreach($members as $member){
-                $user = get_user_by('user_login');
+                $user = get_user_by('login', $member->login_name );
                 if(!$user){
                     $user = (object) array(
                         'name'=>$member->login_name . '  (not a blog member)'
                     );
-                    self::add_member_to_blog($member->login_name);
                 }
+                self::add_member_to_blog($member->login_name);
                 ?>
                 <li>
                     <a href="<?php echo $member->profil_url ;?>"><?php echo $user->display_name ;?></a>
@@ -367,21 +365,17 @@ class RW_Remote_Auth_Client_BPGroup
 
         if(!$hashes) return false;
 
-
         $groups = array();
 
         foreach( $hashes as $hash=>$active ){
             $group = self::get_group( $hash );
             if(is_wp_error($group)){
-
-                $group = (object) array(
+                $groups = (object) array(
                     'name'=>$group->get_error_message()
                 );
             }else{
                 $groups[] = $group;
             }
-
-
         }
         return $groups;
 
@@ -393,16 +387,10 @@ class RW_Remote_Auth_Client_BPGroup
      * @param $hash
      */
     protected static function set_hash($hash){
-
-
         $option = get_option('rw_remote_auth_client_bpgroups');
-
         $option[ $hash ] = 1;
-
         update_option('rw_remote_auth_client_bpgroups',$option);
-
         self::send_success($hash);
-
     }
 
     protected static function remove_hash($hash){
