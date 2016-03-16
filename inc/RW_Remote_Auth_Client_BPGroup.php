@@ -282,7 +282,8 @@ class RW_Remote_Auth_Client_BPGroup
                 'display_name' => $data->user_login,
                 'user_pass' => $data->user_password,
                 'user_email' => $data->user_email,
-                'user_registered' => date('Y-m-d H:i:s')
+                'user_registered' => date('Y-m-d H:i:s'),
+                'role' => 'author'
             );
 
             // check for local user on other blogs
