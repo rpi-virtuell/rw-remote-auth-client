@@ -404,8 +404,8 @@ class RW_Remote_Auth_Client_User {
 		if ( !is_wp_error( $response ) ) {
 		    return $response->data;
 		}else{
-            $data = newClass();
-            $data->error = $response->get_error_message();
+           // $data = newClass();
+           // $data->error = $response->get_error_message();
         }
 		return false;
 	}
