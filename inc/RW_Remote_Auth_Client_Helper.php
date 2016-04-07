@@ -133,4 +133,34 @@ class RW_Remote_Auth_Client_Helper {
 		}
 	}
 
+	/**
+	 *
+	 * @since   0.2.2
+	 * @access  public
+	 * @static
+	 */
+	static public function validate_username( $valid, $username ) {
+
+		$errors = new WP_Error();
+		if ( preg_match( '/[^a-z0-9]/', $username ) ) {
+			$errors->add( 'user_name', __( 'Usernames can only contain lowercase letters (a-z) and numbers.' ) );
+			$valid =  false;
+		}
+
+
+
+
+		return $valid;
+	}
+
+	/**
+	 *
+	 * @since   0.2.2
+	 * @access  public
+	 * @static
+	 */
+	static public function translate_text($translated) {
+		$translated = str_ireplace("Benutzernamen können nur Buchstaben, Zahlen, \".\", \"-\" und @ enthalten", 'Benutzernamen dürfen nur kleingeschriebene Buchstaben (a-z) und Zahlen enthalten', $translated);
+		return $translated;
+	}
 }
