@@ -37,6 +37,8 @@ Answer
 
 
 == Changelog ==
+= 0.2.3 =
+* add users from external buddypress groups (needs rw_group_blogs installed on external buddypress instance)
 
 = 0.2.2 =
 * add username validation
