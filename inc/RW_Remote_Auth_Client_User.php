@@ -420,6 +420,8 @@ class RW_Remote_Auth_Client_User {
     public static function user_new_form_check_remote_auth_server($form_type){
         if($form_type == 'add-existing-user'){
             echo '<input hidden name="rw_remote_auth_server_user_exists" value="add-existing-user">';
+
+
         }
     }
 
