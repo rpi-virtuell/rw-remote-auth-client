@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 "Project-Id-Version: RW Remote Auth Client\n"
-"POT-Creation-Date: 2016-11-02 13:39+0100\n"
+"POT-Creation-Date: 2016-11-02 14:17+0100\n"
 "PO-Revision-Date: 2016-11-02 13:38+0100\n"
 "Last-Translator: Frank Staude <frank@staude.net>\n"
 "Language-Team: Frank Staude <frank@staude.net>\n"
@@ -38,21 +38,28 @@ msgstr ""
 msgid "Add group member from an external buddypress group"
 msgstr ""
 
-#: inc/RW_Remote_Auth_Client_BPGroup.php:246
+#: inc/RW_Remote_Auth_Client_BPGroup.php:241
 msgid "Group Code"
 msgstr ""
 
-#: inc/RW_Remote_Auth_Client_BPGroup.php:250
+#: inc/RW_Remote_Auth_Client_BPGroup.php:246
 msgid ""
-"Copy the code from the \"External Blogs\" page in your group manage page."
+"Copy the code from your groups admin section [ Manage > External Blogs ] and "
+"paste it."
 msgstr ""
 
-#: inc/RW_Remote_Auth_Client_BPGroup.php:257
+#: inc/RW_Remote_Auth_Client_BPGroup.php:247
+msgid ""
+"In order to insert group members from a buddypress group, you must be "
+"adminstrator of the group!"
+msgstr ""
+
+#: inc/RW_Remote_Auth_Client_BPGroup.php:255
 #: inc/RW_Remote_Auth_Client_Options.php:234
 msgid "Save Changes"
 msgstr ""
 
-#: inc/RW_Remote_Auth_Client_BPGroup.php:273
+#: inc/RW_Remote_Auth_Client_BPGroup.php:271
 msgid "Could not get Userdata from login server"
 msgstr ""
 
@@ -181,6 +188,12 @@ msgstr ""
 
 #. Plugin URI of the plugin/theme
 msgid "https://github.com/rpi-virtuell/rw_remote_auth_client"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid ""
+"Connect a wordpress instance to a RW Remoth Auth Server and syncronizes the "
+"userdata."
 msgstr ""
 
 #. Author of the plugin/theme
