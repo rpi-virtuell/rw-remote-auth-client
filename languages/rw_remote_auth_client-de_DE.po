@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: RW Remote Auth Client\n"
-"POT-Creation-Date: 2016-11-02 14:00+0100\n"
-"PO-Revision-Date: 2016-11-02 14:00+0100\n"
+"POT-Creation-Date: 2016-11-02 15:36+0100\n"
+"PO-Revision-Date: 2016-11-02 15:38+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -20,30 +20,61 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
 
-#: inc/RW_Remote_Auth_Client_BPGroup.php:160
+#: inc/RW_Remote_Auth_Client_BPGroup.php:86
+msgid ""
+"Group Code is invalid. Please copy and paste it again. Check your group "
+"role. You must be the goup administrator!"
+msgstr ""
+"Der Code ist ungültig. Bitte kopiere ihn erneut und füge ihn dann hier ein. "
+"Du musst dazu zwingend der Administrator der Gruppe sein!"
+
+#: inc/RW_Remote_Auth_Client_BPGroup.php:164
 #: inc/RW_Remote_Auth_Client_User.php:51
 msgid "Error: Can not decode response."
 msgstr "Fehler: Die Serveranwort lässt sich nicht entschlüssen"
 
-#: inc/RW_Remote_Auth_Client_BPGroup.php:163
+#: inc/RW_Remote_Auth_Client_BPGroup.php:167
 msgid "Error: No valid server response. Context Type: "
 msgstr "Fehler: Keine zulässige Serverantwort. Context Type:"
 
-#: inc/RW_Remote_Auth_Client_BPGroup.php:182
-#: inc/RW_Remote_Auth_Client_BPGroup.php:183
+#: inc/RW_Remote_Auth_Client_BPGroup.php:186
+#: inc/RW_Remote_Auth_Client_BPGroup.php:187
 msgid "Add Group Member"
 msgstr "Gruppemitglieder"
 
-#: inc/RW_Remote_Auth_Client_BPGroup.php:198
+#: inc/RW_Remote_Auth_Client_BPGroup.php:202
 msgid "Add group member from an external buddypress group"
 msgstr ""
 "Gruppenmitglieder einer externen Buddypress-Gruppe zu diesem Blog hinzufügen"
 
-#: inc/RW_Remote_Auth_Client_BPGroup.php:241
+#: inc/RW_Remote_Auth_Client_BPGroup.php:223
+msgid "Rejected"
+msgstr "Zurückgewiesen"
+
+#: inc/RW_Remote_Auth_Client_BPGroup.php:233
+msgid "Error"
+msgstr "Fehler"
+
+#: inc/RW_Remote_Auth_Client_BPGroup.php:245
+msgid ""
+"You want to share your blog with your buddypress group? Yes, this little "
+"trick will do it. Go into your buddypress group, copy a little code snippet "
+"and paste it here. It's almost everything. After your group members joined, "
+"you should set their roles to \"author\" or what ever you want. "
+msgstr ""
+"Du willst diesen Blog gemeinsam mit deiner Gruppe nutzen? Mit diesem kleinen "
+"Trick wird es funktionieren: Gehe auf deiner Buddypress-Gruppe auf "
+"\"Verwalten\" und dann auf \"Externe Blogs\", kopiere den angezeigten Code "
+"und füge ihn hier ein. Das war es es fast schon. Nachdem die Mitglieder "
+"deiner Gruppe diesem Blog hinzugefügt wurden, solltest du ihnen noch die "
+"nötigen Rollen (Autor oder Redakteur) geben, damit sie ebenfalls Beiträge "
+"verfassen oder ändern können."
+
+#: inc/RW_Remote_Auth_Client_BPGroup.php:254
 msgid "Group Code"
 msgstr "Code (der Gruppe)"
 
-#: inc/RW_Remote_Auth_Client_BPGroup.php:246
+#: inc/RW_Remote_Auth_Client_BPGroup.php:259
 msgid ""
 "Copy the code from your groups admin section [ Manage > External Blogs ] and "
 "paste it."
@@ -51,7 +82,7 @@ msgstr ""
 "Kopiere den Code aus dem Adminbereich der Gruppe [ Verwalten > Externe "
 "Blogs ] und füge ihn hier ein."
 
-#: inc/RW_Remote_Auth_Client_BPGroup.php:247
+#: inc/RW_Remote_Auth_Client_BPGroup.php:260
 msgid ""
 "In order to insert group members from a buddypress group, you must be "
 "adminstrator of the group!"
@@ -59,14 +90,20 @@ msgstr ""
 "Um Mitglieder einer Gruppe zu diesem Blog automatisch hinzufügen zu können, "
 "musst du Administrator der Gruppe sein!"
 
-#: inc/RW_Remote_Auth_Client_BPGroup.php:255
+#: inc/RW_Remote_Auth_Client_BPGroup.php:268
 #: inc/RW_Remote_Auth_Client_Options.php:234
 msgid "Save Changes"
 msgstr "Änderungen Speichern"
 
-#: inc/RW_Remote_Auth_Client_BPGroup.php:271
+#: inc/RW_Remote_Auth_Client_BPGroup.php:284
 msgid "Could not get Userdata from login server"
 msgstr "Es konnte nicht auf die externen Daten zugegriffen werden"
+
+#: inc/RW_Remote_Auth_Client_BPGroup.php:320
+msgid "Try to add the following group members: "
+msgstr ""
+"Folgende Gruppenmitglieder sollen hinzugefügt werden. (Sie bekommen anfangs "
+"die Rolle \"Autor\"). "
 
 #: inc/RW_Remote_Auth_Client_Helper.php:148
 msgid "Usernames can only contain lowercase letters (a-z) and numbers."
@@ -230,3 +267,10 @@ msgstr "Frank Staude"
 #. Author URI of the plugin/theme
 msgid "http://staude.net"
 msgstr "http://staude.net"
+
+#~ msgid ""
+#~ "The Code is invalid. Please copy and paste it again. Check your group "
+#~ "role. You must be the goup administrator!"
+#~ msgstr ""
+#~ "Der Code ist ungültig. Bitte kopiere ihn erneut und füge ihn dann hier "
+#~ "ein. Du musst dazu zwingend der Administrator der Gruppe sein!"

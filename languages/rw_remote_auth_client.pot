@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 "Project-Id-Version: RW Remote Auth Client\n"
-"POT-Creation-Date: 2016-11-02 14:17+0100\n"
+"POT-Creation-Date: 2016-11-02 15:47+0100\n"
 "PO-Revision-Date: 2016-11-02 13:38+0100\n"
 "Last-Translator: Frank Staude <frank@staude.net>\n"
 "Language-Team: Frank Staude <frank@staude.net>\n"
@@ -20,47 +20,73 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
 
-#: inc/RW_Remote_Auth_Client_BPGroup.php:160
+#: inc/RW_Remote_Auth_Client_BPGroup.php:88
+msgid ""
+"Group Code is invalid. Please copy and paste it again. Check your group "
+"role. You must be the goup administrator!"
+msgstr ""
+
+#: inc/RW_Remote_Auth_Client_BPGroup.php:166
 #: inc/RW_Remote_Auth_Client_User.php:51
 msgid "Error: Can not decode response."
 msgstr ""
 
-#: inc/RW_Remote_Auth_Client_BPGroup.php:163
+#: inc/RW_Remote_Auth_Client_BPGroup.php:169
 msgid "Error: No valid server response. Context Type: "
 msgstr ""
 
-#: inc/RW_Remote_Auth_Client_BPGroup.php:182
-#: inc/RW_Remote_Auth_Client_BPGroup.php:183
+#: inc/RW_Remote_Auth_Client_BPGroup.php:188
+#: inc/RW_Remote_Auth_Client_BPGroup.php:189
 msgid "Add Group Member"
 msgstr ""
 
-#: inc/RW_Remote_Auth_Client_BPGroup.php:198
+#: inc/RW_Remote_Auth_Client_BPGroup.php:204
 msgid "Add group member from an external buddypress group"
 msgstr ""
 
-#: inc/RW_Remote_Auth_Client_BPGroup.php:241
+#: inc/RW_Remote_Auth_Client_BPGroup.php:225
+msgid "Rejected"
+msgstr ""
+
+#: inc/RW_Remote_Auth_Client_BPGroup.php:235
+msgid "Error"
+msgstr ""
+
+#: inc/RW_Remote_Auth_Client_BPGroup.php:247
+msgid ""
+"You want to share your blog with your buddypress group? Yes, this little "
+"trick will do it. Go into your buddypress group, copy a little code snippet "
+"and paste it here. It's almost everything. After your group members joined, "
+"you should set their roles to \"author\" or what ever you want. "
+msgstr ""
+
+#: inc/RW_Remote_Auth_Client_BPGroup.php:256
 msgid "Group Code"
 msgstr ""
 
-#: inc/RW_Remote_Auth_Client_BPGroup.php:246
+#: inc/RW_Remote_Auth_Client_BPGroup.php:261
 msgid ""
 "Copy the code from your groups admin section [ Manage > External Blogs ] and "
 "paste it."
 msgstr ""
 
-#: inc/RW_Remote_Auth_Client_BPGroup.php:247
+#: inc/RW_Remote_Auth_Client_BPGroup.php:262
 msgid ""
 "In order to insert group members from a buddypress group, you must be "
 "adminstrator of the group!"
 msgstr ""
 
-#: inc/RW_Remote_Auth_Client_BPGroup.php:255
+#: inc/RW_Remote_Auth_Client_BPGroup.php:270
 #: inc/RW_Remote_Auth_Client_Options.php:234
 msgid "Save Changes"
 msgstr ""
 
-#: inc/RW_Remote_Auth_Client_BPGroup.php:271
+#: inc/RW_Remote_Auth_Client_BPGroup.php:286
 msgid "Could not get Userdata from login server"
+msgstr ""
+
+#: inc/RW_Remote_Auth_Client_BPGroup.php:322
+msgid "Try to add the following group members: "
 msgstr ""
 
 #: inc/RW_Remote_Auth_Client_Helper.php:148
