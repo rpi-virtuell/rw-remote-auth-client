@@ -228,11 +228,6 @@ class RW_Remote_Auth_Client_BPGroup
             }
         }
 
-        $sample_hash = array(
-            'group_id' => 3,
-            'url' => 'http://lernlog.de/rw_groupinfo/'
-        );
-        //$hash = base64_encode( json_encode( $sample_hash ) );
         $form_action = admin_url('users.php?page=rw_remote_auth_client_bpgroups');
         ?>
         <form method="post" action="<?php echo $form_action; ?>">
@@ -247,7 +242,10 @@ class RW_Remote_Auth_Client_BPGroup
                     </th>
                     <td>
                         <textarea style="max-width:500px; width:100%" name="rw_remote_auth_client_bpgroups_code" id="rw_remote_auth_client_bpgroups_code" aria-describedby="bpgroups_code-description"><?php //echo $hash;?></textarea>
-                        <p id="bpgroups_code-descriptio" class="description"><?php _e( 'Copy the code from the "External Blogs" page in your group manage page.', RW_Remote_Auth_Client::$textdomain); ?></p>
+                        <p id="bpgroups_code-descriptio" class="description">
+                            <?php _e( 'Copy the code from your groups admin section [ Manage > External Blogs ] and paste it.', RW_Remote_Auth_Client::$textdomain); ?><br>
+                            <?php echo __('In order to insert group members from a buddypress group, you must be adminstrator of the group!', RW_Remote_Auth_Client::get_textdomain()); ?>
+                        </p>
                     </td>
                 </tr>
 
