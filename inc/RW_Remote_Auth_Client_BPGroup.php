@@ -85,7 +85,7 @@ class RW_Remote_Auth_Client_BPGroup
         $group = json_decode( base64_decode($hash) ) ;
 
         if(!$group || !is_a($group,'stdClass')){
-            return new WP_Error( 'invalidCode', __( "Group Code is invalid. Please copy and paste it again. Check your group role. You must be the goup administrator!", RW_Remote_Auth_Client::get_textdomain() ));
+            return new WP_Error( 'invalidCode', __( "Group Code is invalid. Please copy and paste it again. Check your group role. You must be a member of the goup!", RW_Remote_Auth_Client::get_textdomain() ));
         }
 
         $args = array(
@@ -259,7 +259,7 @@ class RW_Remote_Auth_Client_BPGroup
                         <textarea style="max-width:500px; width:100%" name="rw_remote_auth_client_bpgroups_code" id="rw_remote_auth_client_bpgroups_code" aria-describedby="bpgroups_code-description"><?php //echo $hash;?></textarea>
                         <p id="bpgroups_code-descriptio" class="description">
                             <?php _e( 'Copy the code from your groups admin section [ Manage > External Blogs ] and paste it.', RW_Remote_Auth_Client::$textdomain); ?><br>
-                            <?php echo __('In order to insert group members from a buddypress group, you must be adminstrator of the group!', RW_Remote_Auth_Client::get_textdomain()); ?>
+                            <?php echo __('In order to insert group members from a buddypress group, you must be a member of the group!', RW_Remote_Auth_Client::get_textdomain()); ?>
                         </p>
                     </td>
                 </tr>

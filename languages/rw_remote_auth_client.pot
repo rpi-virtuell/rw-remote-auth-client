@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 "Project-Id-Version: RW Remote Auth Client\n"
-"POT-Creation-Date: 2016-11-02 15:47+0100\n"
+"POT-Creation-Date: 2016-11-02 16:04+0100\n"
 "PO-Revision-Date: 2016-11-02 13:38+0100\n"
 "Last-Translator: Frank Staude <frank@staude.net>\n"
 "Language-Team: Frank Staude <frank@staude.net>\n"
@@ -23,7 +23,7 @@ msgstr ""
 #: inc/RW_Remote_Auth_Client_BPGroup.php:88
 msgid ""
 "Group Code is invalid. Please copy and paste it again. Check your group "
-"role. You must be the goup administrator!"
+"role. You must be a member of the goup!"
 msgstr ""
 
 #: inc/RW_Remote_Auth_Client_BPGroup.php:166
@@ -72,8 +72,8 @@ msgstr ""
 
 #: inc/RW_Remote_Auth_Client_BPGroup.php:262
 msgid ""
-"In order to insert group members from a buddypress group, you must be "
-"adminstrator of the group!"
+"In order to insert group members from a buddypress group, you must be a "
+"member of the group!"
 msgstr ""
 
 #: inc/RW_Remote_Auth_Client_BPGroup.php:270

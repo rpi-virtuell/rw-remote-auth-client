@@ -37,6 +37,9 @@ Answer
 
 
 == Changelog ==
+= 0.2.4 =
+* add german language, improve usability
+
 = 0.2.3 =
 * add users from external buddypress groups (needs rw_group_blogs installed on external buddypress instance)
 

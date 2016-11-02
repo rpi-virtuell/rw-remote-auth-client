@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: RW Remote Auth Client\n"
-"POT-Creation-Date: 2016-11-02 15:36+0100\n"
-"PO-Revision-Date: 2016-11-02 15:38+0100\n"
+"POT-Creation-Date: 2016-11-02 16:02+0100\n"
+"PO-Revision-Date: 2016-11-02 16:04+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -20,42 +20,42 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
 
-#: inc/RW_Remote_Auth_Client_BPGroup.php:86
+#: inc/RW_Remote_Auth_Client_BPGroup.php:88
 msgid ""
 "Group Code is invalid. Please copy and paste it again. Check your group "
-"role. You must be the goup administrator!"
+"role. You must be a member of the goup!"
 msgstr ""
-"Der Code ist ungültig. Bitte kopiere ihn erneut und füge ihn dann hier ein. "
-"Du musst dazu zwingend der Administrator der Gruppe sein!"
+"Bist du Mitglied der Gruppe sein? Der Code ist ungültig. Bitte kopiere ihn "
+"erneut und füge ihn dann hier ein."
 
-#: inc/RW_Remote_Auth_Client_BPGroup.php:164
+#: inc/RW_Remote_Auth_Client_BPGroup.php:166
 #: inc/RW_Remote_Auth_Client_User.php:51
 msgid "Error: Can not decode response."
 msgstr "Fehler: Die Serveranwort lässt sich nicht entschlüssen"
 
-#: inc/RW_Remote_Auth_Client_BPGroup.php:167
+#: inc/RW_Remote_Auth_Client_BPGroup.php:169
 msgid "Error: No valid server response. Context Type: "
 msgstr "Fehler: Keine zulässige Serverantwort. Context Type:"
 
-#: inc/RW_Remote_Auth_Client_BPGroup.php:186
-#: inc/RW_Remote_Auth_Client_BPGroup.php:187
+#: inc/RW_Remote_Auth_Client_BPGroup.php:188
+#: inc/RW_Remote_Auth_Client_BPGroup.php:189
 msgid "Add Group Member"
 msgstr "Gruppemitglieder"
 
-#: inc/RW_Remote_Auth_Client_BPGroup.php:202
+#: inc/RW_Remote_Auth_Client_BPGroup.php:204
 msgid "Add group member from an external buddypress group"
 msgstr ""
 "Gruppenmitglieder einer externen Buddypress-Gruppe zu diesem Blog hinzufügen"
 
-#: inc/RW_Remote_Auth_Client_BPGroup.php:223
+#: inc/RW_Remote_Auth_Client_BPGroup.php:225
 msgid "Rejected"
 msgstr "Zurückgewiesen"
 
-#: inc/RW_Remote_Auth_Client_BPGroup.php:233
+#: inc/RW_Remote_Auth_Client_BPGroup.php:235
 msgid "Error"
 msgstr "Fehler"
 
-#: inc/RW_Remote_Auth_Client_BPGroup.php:245
+#: inc/RW_Remote_Auth_Client_BPGroup.php:247
 msgid ""
 "You want to share your blog with your buddypress group? Yes, this little "
 "trick will do it. Go into your buddypress group, copy a little code snippet "
@@ -70,11 +70,11 @@ msgstr ""
 "nötigen Rollen (Autor oder Redakteur) geben, damit sie ebenfalls Beiträge "
 "verfassen oder ändern können."
 
-#: inc/RW_Remote_Auth_Client_BPGroup.php:254
+#: inc/RW_Remote_Auth_Client_BPGroup.php:256
 msgid "Group Code"
 msgstr "Code (der Gruppe)"
 
-#: inc/RW_Remote_Auth_Client_BPGroup.php:259
+#: inc/RW_Remote_Auth_Client_BPGroup.php:261
 msgid ""
 "Copy the code from your groups admin section [ Manage > External Blogs ] and "
 "paste it."
@@ -82,24 +82,24 @@ msgstr ""
 "Kopiere den Code aus dem Adminbereich der Gruppe [ Verwalten > Externe "
 "Blogs ] und füge ihn hier ein."
 
-#: inc/RW_Remote_Auth_Client_BPGroup.php:260
+#: inc/RW_Remote_Auth_Client_BPGroup.php:262
 msgid ""
-"In order to insert group members from a buddypress group, you must be "
-"adminstrator of the group!"
+"In order to insert group members from a buddypress group, you must be a "
+"member of the group!"
 msgstr ""
-"Um Mitglieder einer Gruppe zu diesem Blog automatisch hinzufügen zu können, "
-"musst du Administrator der Gruppe sein!"
+"Um Mitglieder aus einer Gruppe von Buddypress einzufügen, musst du selbst "
+"Mitglied der Gruppe sein!"
 
-#: inc/RW_Remote_Auth_Client_BPGroup.php:268
+#: inc/RW_Remote_Auth_Client_BPGroup.php:270
 #: inc/RW_Remote_Auth_Client_Options.php:234
 msgid "Save Changes"
 msgstr "Änderungen Speichern"
 
-#: inc/RW_Remote_Auth_Client_BPGroup.php:284
+#: inc/RW_Remote_Auth_Client_BPGroup.php:286
 msgid "Could not get Userdata from login server"
 msgstr "Es konnte nicht auf die externen Daten zugegriffen werden"
 
-#: inc/RW_Remote_Auth_Client_BPGroup.php:320
+#: inc/RW_Remote_Auth_Client_BPGroup.php:322
 msgid "Try to add the following group members: "
 msgstr ""
 "Folgende Gruppenmitglieder sollen hinzugefügt werden. (Sie bekommen anfangs "
@@ -267,6 +267,20 @@ msgstr "Frank Staude"
 #. Author URI of the plugin/theme
 msgid "http://staude.net"
 msgstr "http://staude.net"
+
+#~ msgid ""
+#~ "Group Code is invalid. Please copy and paste it again. Check your group "
+#~ "role. You must be the goup administrator!"
+#~ msgstr ""
+#~ "Der Code ist ungültig. Bitte kopiere ihn erneut und füge ihn dann hier "
+#~ "ein. Du musst dazu zwingend der Administrator der Gruppe sein!"
+
+#~ msgid ""
+#~ "In order to insert group members from a buddypress group, you must be "
+#~ "adminstrator of the group!"
+#~ msgstr ""
+#~ "Um Mitglieder einer Gruppe zu diesem Blog automatisch hinzufügen zu "
+#~ "können, musst du Administrator der Gruppe sein!"
 
 #~ msgid ""
 #~ "The Code is invalid. Please copy and paste it again. Check your group "
