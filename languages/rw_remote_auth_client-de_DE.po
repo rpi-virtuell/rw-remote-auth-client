@@ -1,0 +1,192 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: RW Remote Auth Client\n"
+"POT-Creation-Date: 2016-11-02 13:40+0100\n"
+"PO-Revision-Date: 2016-11-02 13:40+0100\n"
+"Last-Translator: Frank Staude <frank@staude.net>\n"
+"Language-Team: Frank Staude <frank@staude.net>\n"
+"Language: de_DE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.11\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-WPHeader: rw_remote_auth_client.php\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
+"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.js\n"
+
+#: inc/RW_Remote_Auth_Client_BPGroup.php:160
+#: inc/RW_Remote_Auth_Client_User.php:51
+msgid "Error: Can not decode response."
+msgstr ""
+
+#: inc/RW_Remote_Auth_Client_BPGroup.php:163
+msgid "Error: No valid server response. Context Type: "
+msgstr ""
+
+#: inc/RW_Remote_Auth_Client_BPGroup.php:182
+#: inc/RW_Remote_Auth_Client_BPGroup.php:183
+msgid "Add Group Member"
+msgstr ""
+
+#: inc/RW_Remote_Auth_Client_BPGroup.php:198
+msgid "Add group member from an external buddypress group"
+msgstr ""
+
+#: inc/RW_Remote_Auth_Client_BPGroup.php:246
+msgid "Group Code"
+msgstr ""
+
+#: inc/RW_Remote_Auth_Client_BPGroup.php:250
+msgid ""
+"Copy the code from the \"External Blogs\" page in your group manage page."
+msgstr ""
+
+#: inc/RW_Remote_Auth_Client_BPGroup.php:257
+#: inc/RW_Remote_Auth_Client_Options.php:234
+msgid "Save Changes"
+msgstr ""
+
+#: inc/RW_Remote_Auth_Client_BPGroup.php:273
+msgid "Could not get Userdata from login server"
+msgstr ""
+
+#: inc/RW_Remote_Auth_Client_Helper.php:148
+msgid "Usernames can only contain lowercase letters (a-z) and numbers."
+msgstr ""
+
+#: inc/RW_Remote_Auth_Client_Installation.php:27
+msgid "This plugin requires WordPress 3.0 or newer to work"
+msgstr ""
+
+#: inc/RW_Remote_Auth_Client_Installation.php:40
+#, php-format
+msgid ""
+"This plugin requires PHP 5.2 or newer to work. Your current PHP version is "
+"%1s, please update."
+msgstr ""
+
+#: inc/RW_Remote_Auth_Client_Installation.php:50
+msgid "Sorry Admin!"
+msgstr ""
+
+#: inc/RW_Remote_Auth_Client_Installation.php:51
+msgid "In a multisite context you may only activate this plugin network wide. "
+msgstr ""
+
+#: inc/RW_Remote_Auth_Client_Installation.php:119
+msgid "rw_auth not responding"
+msgstr ""
+
+#: inc/RW_Remote_Auth_Client_Installation.php:120
+#, php-format
+msgid "The rw_auth on %1s ist not responding."
+msgstr ""
+
+#: inc/RW_Remote_Auth_Client_Options.php:80
+#: inc/RW_Remote_Auth_Client_Options.php:85
+msgid "Settings"
+msgstr ""
+
+#: inc/RW_Remote_Auth_Client_Options.php:123
+#: inc/RW_Remote_Auth_Client_Options.php:133
+msgid "Remote Auth Client"
+msgstr ""
+
+#: inc/RW_Remote_Auth_Client_Options.php:165
+msgid "You do not have sufficient permissions to access this page."
+msgstr ""
+
+#: inc/RW_Remote_Auth_Client_Options.php:177
+msgid "Remote Auth Client Options"
+msgstr ""
+
+#: inc/RW_Remote_Auth_Client_Options.php:178
+msgid "Settings for Remote Auth Server"
+msgstr ""
+
+#: inc/RW_Remote_Auth_Client_Options.php:196
+msgid "API Server Endpoint URL"
+msgstr ""
+
+#: inc/RW_Remote_Auth_Client_Options.php:200
+msgid "Endpoint URL for API request."
+msgstr ""
+
+#: inc/RW_Remote_Auth_Client_Options.php:206
+msgid "API Key"
+msgstr ""
+
+#: inc/RW_Remote_Auth_Client_Options.php:210
+msgid "Entered by auth service"
+msgstr ""
+
+#: inc/RW_Remote_Auth_Client_Options.php:215
+msgid "Register hint URL"
+msgstr ""
+
+#: inc/RW_Remote_Auth_Client_Options.php:219
+msgid "URL for register hint page"
+msgstr ""
+
+#: inc/RW_Remote_Auth_Client_Options.php:224
+msgid "Don't overwrite admin password"
+msgstr ""
+
+#: inc/RW_Remote_Auth_Client_Options.php:228
+msgid "Check this box to bypass password overwrite from administrators "
+msgstr ""
+
+#: inc/RW_Remote_Auth_Client_User.php:20
+msgid "Error: Server can not encode server response."
+msgstr ""
+
+#: inc/RW_Remote_Auth_Client_User.php:54
+msgid "Error. Wrong Content Type. Check the API Server Endpoint"
+msgstr ""
+
+#: inc/RW_Remote_Auth_Client_User.php:58
+msgid "Error. Check the API Server Endpoint URL in the Settingspage"
+msgstr ""
+
+#: inc/RW_Remote_Auth_Client_User.php:494
+msgid "User was not added to your site"
+msgstr ""
+
+#: inc/RW_Remote_Auth_Client_User.php:651
+#, php-format
+msgid "[%s] Joining confirmation"
+msgstr ""
+
+#: inc/RW_Remote_Auth_Client_User.php:666
+#, php-format
+msgid ""
+"Hi,\n"
+"\n"
+"You've been invited to join '%1$s' at\n"
+"%2$s with the role of %3$s.\n"
+"\n"
+"Please click the following link to confirm the invite:\n"
+"%4$s"
+msgstr ""
+
+#. Plugin Name of the plugin/theme
+msgid "RW Remote Auth Client"
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid "https://github.com/rpi-virtuell/rw_remote_auth_client"
+msgstr "https://github.com/rpi-virtuell/rw_remote_auth_client"
+
+#. Author of the plugin/theme
+msgid "Frank Staude"
+msgstr "Frank Staude"
+
+#. Author URI of the plugin/theme
+msgid "http://staude.net"
+msgstr "http://staude.net"
