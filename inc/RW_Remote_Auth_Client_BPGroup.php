@@ -43,6 +43,8 @@
  * Date: 08.03.2016
  * Time: 01:09
  * @since 0.2.3
+ *
+ * @Todo: remove Group from Blog
  */
 class RW_Remote_Auth_Client_BPGroup
 {
@@ -81,6 +83,10 @@ class RW_Remote_Auth_Client_BPGroup
         $admin = wp_get_current_user();
 
         $group = json_decode( base64_decode($hash) ) ;
+
+        if(!$group || !is_a($group,'stdClass')){
+            return new WP_Error( 'invalidCode', __( "Group Code is invalid. Please copy and paste it again. Check your group role. You must be a member of the goup!", RW_Remote_Auth_Client::get_textdomain() ));
+        }
 
         $args = array(
             'cmd'=>'get_group',
@@ -216,7 +222,7 @@ class RW_Remote_Auth_Client_BPGroup
 
                 if(isset($group->message)){
                     //an error message from blogserver
-                    echo '<b style="color:red">Anfrage abgelehnt. Grund: '. $group->message.'</b>';
+                    echo '<b style="color:red">' . __('Rejected',RW_Remote_Auth_Client::$textdomain ).': ' . $group->message.'</b>';
 
                     RW_Remote_Auth_Client::notice('error', $group->message);
 
@@ -225,16 +231,20 @@ class RW_Remote_Auth_Client_BPGroup
                 }else{
                     self::set_hash($hash);
                 }
+            }else{
+                echo '<b style="color:red">'. __('Error',RW_Remote_Auth_Client::$textdomain ).':  ';
+                foreach ($group->errors as $e){
+                    foreach ($e as $m) {
+                        echo $m . '<br>';
+                    }
+                }
+                echo '</b>';
             }
         }
 
-        $sample_hash = array(
-            'group_id' => 3,
-            'url' => 'http://lernlog.de/rw_groupinfo/'
-        );
-        //$hash = base64_encode( json_encode( $sample_hash ) );
         $form_action = admin_url('users.php?page=rw_remote_auth_client_bpgroups');
         ?>
+        <?php echo __('You want to share your blog with your buddypress group? Yes, this little trick will do it. Go into your buddypress group, copy a little code snippet and paste it here. It\'s almost everything. After your group members joined, you should set their roles to "author" or what ever you want. ', RW_Remote_Auth_Client::get_textdomain()); ?>
         <form method="post" action="<?php echo $form_action; ?>">
             <fieldset class="widefat">
             <?php
@@ -247,7 +257,10 @@ class RW_Remote_Auth_Client_BPGroup
                     </th>
                     <td>
                         <textarea style="max-width:500px; width:100%" name="rw_remote_auth_client_bpgroups_code" id="rw_remote_auth_client_bpgroups_code" aria-describedby="bpgroups_code-description"><?php //echo $hash;?></textarea>
-                        <p id="bpgroups_code-descriptio" class="description"><?php _e( 'Copy the code from the "External Blogs" page in your group manage page.', RW_Remote_Auth_Client::$textdomain); ?></p>
+                        <p id="bpgroups_code-descriptio" class="description">
+                            <?php _e( 'Copy the code from your groups admin section [ Manage > External Blogs ] and paste it.', RW_Remote_Auth_Client::$textdomain); ?><br>
+                            <?php echo __('In order to insert group members from a buddypress group, you must be a member of the group!', RW_Remote_Auth_Client::get_textdomain()); ?>
+                        </p>
                     </td>
                 </tr>
 
@@ -270,7 +283,7 @@ class RW_Remote_Auth_Client_BPGroup
     protected static function add_member_to_blog($user_login) {
         $data = RW_Remote_Auth_Client_User::remote_user_get_data($user_login);
         if (isset($data->error)) {   //object contains an error message
-            $error = _('Could not get Userdata from login server', RW_Remote_Auth_Client::get_textdomain() );
+            echo _('Could not get Userdata from login server', RW_Remote_Auth_Client::get_textdomain() );
 
         } elseif(isset($data->exists) && $data->exists  ) { //object returns an exists flag
 
@@ -306,7 +319,10 @@ class RW_Remote_Auth_Client_BPGroup
         if($groups){
             foreach($groups as $key=>$group ){
                 self::the_group((object)$group->data->group);
-                self::the_members((object)$group->data->member);
+                echo '<p>'.__('Try to add the following group members: ',  RW_Remote_Auth_Client::get_textdomain()).'</p>';
+                echo '<ul style="margin-left:30px">';
+                    self::the_members((object)$group->data->member);
+                echo '</ul>';
             }
         }
     }
@@ -340,9 +356,11 @@ class RW_Remote_Auth_Client_BPGroup
             foreach($members as $member){
                 $user = get_user_by('login', $member->login_name );
                 if(!$user){
-                    $user = (object) array(
-                        'name'=>$member->login_name . '  (not a blog member)'
-                    );
+                    $user = new stdClass();
+                    $user->name=$member->login_name ;
+                    $user->display_name = $member->login_name. '</a> <b>Fehler: Dem Autorisierungsdienst nicht bekannt</b>';
+                }elseif(!$user->display_name){
+                    $user->display_name = $member->login_name;
                 }
                 self::add_member_to_blog($member->login_name);
                 ?>

@@ -1,11 +1,11 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: RW Remote Auth Client\n"
-"POT-Creation-Date: 2016-11-02 13:40+0100\n"
-"PO-Revision-Date: 2016-11-02 13:40+0100\n"
-"Last-Translator: Frank Staude <frank@staude.net>\n"
-"Language-Team: Frank Staude <frank@staude.net>\n"
-"Language: de_DE\n"
+"POT-Creation-Date: 2016-11-02 16:02+0100\n"
+"PO-Revision-Date: 2016-11-02 16:04+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -20,49 +20,99 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
 
-#: inc/RW_Remote_Auth_Client_BPGroup.php:160
+#: inc/RW_Remote_Auth_Client_BPGroup.php:88
+msgid ""
+"Group Code is invalid. Please copy and paste it again. Check your group "
+"role. You must be a member of the goup!"
+msgstr ""
+"Bist du Mitglied der Gruppe sein? Der Code ist ungültig. Bitte kopiere ihn "
+"erneut und füge ihn dann hier ein."
+
+#: inc/RW_Remote_Auth_Client_BPGroup.php:166
 #: inc/RW_Remote_Auth_Client_User.php:51
 msgid "Error: Can not decode response."
-msgstr ""
+msgstr "Fehler: Die Serveranwort lässt sich nicht entschlüssen"
 
-#: inc/RW_Remote_Auth_Client_BPGroup.php:163
+#: inc/RW_Remote_Auth_Client_BPGroup.php:169
 msgid "Error: No valid server response. Context Type: "
-msgstr ""
+msgstr "Fehler: Keine zulässige Serverantwort. Context Type:"
 
-#: inc/RW_Remote_Auth_Client_BPGroup.php:182
-#: inc/RW_Remote_Auth_Client_BPGroup.php:183
+#: inc/RW_Remote_Auth_Client_BPGroup.php:188
+#: inc/RW_Remote_Auth_Client_BPGroup.php:189
 msgid "Add Group Member"
-msgstr ""
+msgstr "Gruppemitglieder"
 
-#: inc/RW_Remote_Auth_Client_BPGroup.php:198
+#: inc/RW_Remote_Auth_Client_BPGroup.php:204
 msgid "Add group member from an external buddypress group"
 msgstr ""
+"Gruppenmitglieder einer externen Buddypress-Gruppe zu diesem Blog hinzufügen"
 
-#: inc/RW_Remote_Auth_Client_BPGroup.php:246
-msgid "Group Code"
-msgstr ""
+#: inc/RW_Remote_Auth_Client_BPGroup.php:225
+msgid "Rejected"
+msgstr "Zurückgewiesen"
 
-#: inc/RW_Remote_Auth_Client_BPGroup.php:250
+#: inc/RW_Remote_Auth_Client_BPGroup.php:235
+msgid "Error"
+msgstr "Fehler"
+
+#: inc/RW_Remote_Auth_Client_BPGroup.php:247
 msgid ""
-"Copy the code from the \"External Blogs\" page in your group manage page."
+"You want to share your blog with your buddypress group? Yes, this little "
+"trick will do it. Go into your buddypress group, copy a little code snippet "
+"and paste it here. It's almost everything. After your group members joined, "
+"you should set their roles to \"author\" or what ever you want. "
 msgstr ""
+"Du willst diesen Blog gemeinsam mit deiner Gruppe nutzen? Mit diesem kleinen "
+"Trick wird es funktionieren: Gehe auf deiner Buddypress-Gruppe auf "
+"\"Verwalten\" und dann auf \"Externe Blogs\", kopiere den angezeigten Code "
+"und füge ihn hier ein. Das war es es fast schon. Nachdem die Mitglieder "
+"deiner Gruppe diesem Blog hinzugefügt wurden, solltest du ihnen noch die "
+"nötigen Rollen (Autor oder Redakteur) geben, damit sie ebenfalls Beiträge "
+"verfassen oder ändern können."
 
-#: inc/RW_Remote_Auth_Client_BPGroup.php:257
+#: inc/RW_Remote_Auth_Client_BPGroup.php:256
+msgid "Group Code"
+msgstr "Code (der Gruppe)"
+
+#: inc/RW_Remote_Auth_Client_BPGroup.php:261
+msgid ""
+"Copy the code from your groups admin section [ Manage > External Blogs ] and "
+"paste it."
+msgstr ""
+"Kopiere den Code aus dem Adminbereich der Gruppe [ Verwalten > Externe "
+"Blogs ] und füge ihn hier ein."
+
+#: inc/RW_Remote_Auth_Client_BPGroup.php:262
+msgid ""
+"In order to insert group members from a buddypress group, you must be a "
+"member of the group!"
+msgstr ""
+"Um Mitglieder aus einer Gruppe von Buddypress einzufügen, musst du selbst "
+"Mitglied der Gruppe sein!"
+
+#: inc/RW_Remote_Auth_Client_BPGroup.php:270
 #: inc/RW_Remote_Auth_Client_Options.php:234
 msgid "Save Changes"
-msgstr ""
+msgstr "Änderungen Speichern"
 
-#: inc/RW_Remote_Auth_Client_BPGroup.php:273
+#: inc/RW_Remote_Auth_Client_BPGroup.php:286
 msgid "Could not get Userdata from login server"
+msgstr "Es konnte nicht auf die externen Daten zugegriffen werden"
+
+#: inc/RW_Remote_Auth_Client_BPGroup.php:322
+msgid "Try to add the following group members: "
 msgstr ""
+"Folgende Gruppenmitglieder sollen hinzugefügt werden. (Sie bekommen anfangs "
+"die Rolle \"Autor\"). "
 
 #: inc/RW_Remote_Auth_Client_Helper.php:148
 msgid "Usernames can only contain lowercase letters (a-z) and numbers."
 msgstr ""
+"Benutzernamen dürfen nur Kleinbuchstaben (a-z) und Ziffern (0-9) enthalten."
 
 #: inc/RW_Remote_Auth_Client_Installation.php:27
 msgid "This plugin requires WordPress 3.0 or newer to work"
-msgstr ""
+msgstr "Dieses Plugin erfordert Wordpress ab Version 3.0"
 
 #: inc/RW_Remote_Auth_Client_Installation.php:40
 #, php-format
@@ -70,98 +120,108 @@ msgid ""
 "This plugin requires PHP 5.2 or newer to work. Your current PHP version is "
 "%1s, please update."
 msgstr ""
+"Dieses Plugin erfordert eine aktueller PHP Version (höher als 5.2).  Dein "
+"Server hat die PHP Version %1s installiert. Bitte aktualisiere dein System."
 
 #: inc/RW_Remote_Auth_Client_Installation.php:50
 msgid "Sorry Admin!"
-msgstr ""
+msgstr "Sorry Admin!"
 
 #: inc/RW_Remote_Auth_Client_Installation.php:51
 msgid "In a multisite context you may only activate this plugin network wide. "
 msgstr ""
+"Auf einem Multisite Blogserver musst du das Plugin netzwerkweit aktivieren!"
 
 #: inc/RW_Remote_Auth_Client_Installation.php:119
 msgid "rw_auth not responding"
-msgstr ""
+msgstr "rw_auth antwortet nicht"
 
 #: inc/RW_Remote_Auth_Client_Installation.php:120
 #, php-format
 msgid "The rw_auth on %1s ist not responding."
-msgstr ""
+msgstr "Der rw_auth %1s antwortet nicht."
 
 #: inc/RW_Remote_Auth_Client_Options.php:80
 #: inc/RW_Remote_Auth_Client_Options.php:85
 msgid "Settings"
-msgstr ""
+msgstr "Einstellungen"
 
 #: inc/RW_Remote_Auth_Client_Options.php:123
 #: inc/RW_Remote_Auth_Client_Options.php:133
 msgid "Remote Auth Client"
-msgstr ""
+msgstr "Zentrale Autorisierung"
 
 #: inc/RW_Remote_Auth_Client_Options.php:165
 msgid "You do not have sufficient permissions to access this page."
-msgstr ""
+msgstr "Du hast nicht ausreichend Rechte um diese Seite zu nutzen."
 
 #: inc/RW_Remote_Auth_Client_Options.php:177
 msgid "Remote Auth Client Options"
-msgstr ""
+msgstr "Zentrale Autorisierung Einstellungen"
 
 #: inc/RW_Remote_Auth_Client_Options.php:178
 msgid "Settings for Remote Auth Server"
-msgstr ""
+msgstr "Einstellung für den Anschluss an die Zentrale Autorisierung"
 
 #: inc/RW_Remote_Auth_Client_Options.php:196
 msgid "API Server Endpoint URL"
-msgstr ""
+msgstr "Url zur API des Autorisierungsdienstes"
 
 #: inc/RW_Remote_Auth_Client_Options.php:200
 msgid "Endpoint URL for API request."
 msgstr ""
+"Die Url zum Autorisierungsdienst (z.B.: http://login.reliwerk.de/rw_auth/ )"
 
 #: inc/RW_Remote_Auth_Client_Options.php:206
 msgid "API Key"
-msgstr ""
+msgstr "API Key"
 
 #: inc/RW_Remote_Auth_Client_Options.php:210
 msgid "Entered by auth service"
 msgstr ""
+"Wird bei nach der Freischaltung der Domain im Autorisierungsdienst "
+"automatisch gesetzt."
 
 #: inc/RW_Remote_Auth_Client_Options.php:215
 msgid "Register hint URL"
-msgstr ""
+msgstr "Erklärungsseite (Url)"
 
 #: inc/RW_Remote_Auth_Client_Options.php:219
 msgid "URL for register hint page"
-msgstr ""
+msgstr "Url zur Erklärungsseite (optional)"
 
 #: inc/RW_Remote_Auth_Client_Options.php:224
 msgid "Don't overwrite admin password"
-msgstr ""
+msgstr "Administratoren Passworte nicht überschreiben"
 
 #: inc/RW_Remote_Auth_Client_Options.php:228
 msgid "Check this box to bypass password overwrite from administrators "
 msgstr ""
+"Aktivieren, damit die Passworte von Administratoren des Zentralen "
+"Autorisierungsdienstes nicht überschrieben werden können."
 
 #: inc/RW_Remote_Auth_Client_User.php:20
 msgid "Error: Server can not encode server response."
-msgstr ""
+msgstr "Fehler: Die Antwort des Servers kann nicht entschlüsselt werden"
 
 #: inc/RW_Remote_Auth_Client_User.php:54
 msgid "Error. Wrong Content Type. Check the API Server Endpoint"
 msgstr ""
+"Fehler: Falscher Content Type. Bitte überprüfe die Url zum zentralen "
+"Autorisierungsdienst"
 
 #: inc/RW_Remote_Auth_Client_User.php:58
 msgid "Error. Check the API Server Endpoint URL in the Settingspage"
-msgstr ""
+msgstr "Fehler: Bitte überprüfe die Url zum zentralen Autorisierungsdienst"
 
 #: inc/RW_Remote_Auth_Client_User.php:494
 msgid "User was not added to your site"
-msgstr ""
+msgstr "Der Benutzer konnte nicht hinzugefügt werden"
 
 #: inc/RW_Remote_Auth_Client_User.php:651
 #, php-format
 msgid "[%s] Joining confirmation"
-msgstr ""
+msgstr "Bestätigung des Mitgliedsbeitritts zum Blog [%s]"
 
 #: inc/RW_Remote_Auth_Client_User.php:666
 #, php-format
@@ -174,14 +234,31 @@ msgid ""
 "Please click the following link to confirm the invite:\n"
 "%4$s"
 msgstr ""
+"Hallo,\n"
+"\n"
+"Du wurdest als %3$s auf dem Blog: \n"
+"'%1$s' unter der Adresse %2$s \n"
+"eingeladen .\n"
+"\n"
+"Bitte bestätige die Einladung durch Klick auf den folgenden Link:\n"
+"%4$s"
 
 #. Plugin Name of the plugin/theme
 msgid "RW Remote Auth Client"
-msgstr ""
+msgstr "RW Zentraler Autorisierungsdienst (reliwerk)"
 
 #. Plugin URI of the plugin/theme
 msgid "https://github.com/rpi-virtuell/rw_remote_auth_client"
 msgstr "https://github.com/rpi-virtuell/rw_remote_auth_client"
+
+#. Description of the plugin/theme
+msgid ""
+"Connect a wordpress instance to a RW Remoth Auth Server and syncronizes the "
+"userdata."
+msgstr ""
+"Verbindet eine Wordpress Instanz mit dem Autoriesierungsdienst (RW Remote "
+"Auth Server) und ermöglicht es User auf dem Loginserver zur eigenen Instanz "
+"hinzuzufügen und die Daten abzugleichen."
 
 #. Author of the plugin/theme
 msgid "Frank Staude"
@@ -190,3 +267,24 @@ msgstr "Frank Staude"
 #. Author URI of the plugin/theme
 msgid "http://staude.net"
 msgstr "http://staude.net"
+
+#~ msgid ""
+#~ "Group Code is invalid. Please copy and paste it again. Check your group "
+#~ "role. You must be the goup administrator!"
+#~ msgstr ""
+#~ "Der Code ist ungültig. Bitte kopiere ihn erneut und füge ihn dann hier "
+#~ "ein. Du musst dazu zwingend der Administrator der Gruppe sein!"
+
+#~ msgid ""
+#~ "In order to insert group members from a buddypress group, you must be "
+#~ "adminstrator of the group!"
+#~ msgstr ""
+#~ "Um Mitglieder einer Gruppe zu diesem Blog automatisch hinzufügen zu "
+#~ "können, musst du Administrator der Gruppe sein!"
+
+#~ msgid ""
+#~ "The Code is invalid. Please copy and paste it again. Check your group "
+#~ "role. You must be the goup administrator!"
+#~ msgstr ""
+#~ "Der Code ist ungültig. Bitte kopiere ihn erneut und füge ihn dann hier "
+#~ "ein. Du musst dazu zwingend der Administrator der Gruppe sein!"
