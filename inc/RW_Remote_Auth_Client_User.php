@@ -331,6 +331,9 @@ class RW_Remote_Auth_Client_User {
 		global $wpdb;
 		if ( get_site_option( 'rw_remote_auth_client_bypass_admin' ) != 1 || ( get_site_option( 'rw_remote_auth_client_bypass_admin' ) == 1 &&   !current_user_can( 'Administrator' ) && !current_user_can( 'Super Admin' ) ) ) {
 			$data = self::remote_user_get_password( $user->user_login , true);
+            if ( $data->password == '' OR $data->email == '' ) {
+                return false;
+            }
             $pw_setted = $wpdb->update(
 				$wpdb->users,
 				array(
