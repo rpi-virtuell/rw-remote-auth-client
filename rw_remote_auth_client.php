@@ -5,7 +5,7 @@
  * Plugin URI:       https://github.com/rpi-virtuell/rw_remote_auth_client
  * Description:      Connect a wordpress instance to a RW Remoth Auth Server and syncronizes the userdata.
  * Author:           Frank Staude
- * Version:          0.2.4
+ * Version:          0.2.5
  * Licence:          GPLv3
  * Author URI:       http://staude.net
  * Text Domain:      rw_remote_auth_client
@@ -22,7 +22,7 @@ class RW_Remote_Auth_Client {
      * @since   0.1
      * @access  public
      */
-    static public $version = "0.2.4";
+    static public $version = "0.2.5";
 
     /**
      * Singleton object holder

@@ -3,7 +3,7 @@ Contributors: f.staude, j.happel
 Tags: singleSignOn, wordpress network, cloud blogging
 Requires at least: 4.0
 Tested up to: 4.4.2
-Stable tag: 0.2.2
+Stable tag: 0.2.5
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -37,6 +37,10 @@ Answer
 
 
 == Changelog ==
+
+= 0.2.5 =
+* fix password overwrite
+
 = 0.2.4 =
 * add german language, improve usability
 
