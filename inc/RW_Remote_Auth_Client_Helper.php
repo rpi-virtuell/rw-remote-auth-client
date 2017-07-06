@@ -171,7 +171,7 @@ class RW_Remote_Auth_Client_Helper {
 	static public function check_registration( $registration_url ) {
 
 		$response = RW_Remote_Auth_Client_User::remote_say_hello();
-		var_dump( $response);
+
 		if ( $response->notice == 'success') {
 			return $registration_url;
 		} else {
