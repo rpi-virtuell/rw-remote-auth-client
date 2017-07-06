@@ -22,7 +22,7 @@ class RW_Remote_Auth_Client {
      * @since   0.1
      * @access  public
      */
-    static public $version = "0.2.5";
+    static public $version = "0.2.6";
 
     /**
      * Singleton object holder

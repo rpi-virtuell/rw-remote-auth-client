@@ -540,19 +540,14 @@ class RW_Remote_Auth_Client_User {
      * @see reset_password_on_login_server
      */
     public static function add_update_singlesite_user($errors, $update, $user ){
+    	if ( is_multisite())
+    		return;
 
-        if ( $errors->get_error_codes() ) return;
+        if ( $errors->get_error_codes() ) {
+        	return $errors;
+        }
 
-        if($update) { // may be a new user
-
-
-            self::reset_password_on_login_server ( $user, $user->user_pass );
-
-
-        }else{ // may be a new user
-
-
-
+        if( ! $update ) { // a new user
             if(!$redirect = self::add_existing_user_from_auth_server($user->user_email)){
                 if(!$redirect = self::add_existing_user_from_auth_server($user->user_login)){
                     //no existing user found
