@@ -148,10 +148,6 @@ class RW_Remote_Auth_Client_Helper {
 			$errors->add( 'user_name', __( 'Usernames can only contain lowercase letters (a-z) and numbers.' ) );
 			$valid =  false;
 		}
-
-
-
-
 		return $valid;
 	}
 
@@ -164,5 +160,23 @@ class RW_Remote_Auth_Client_Helper {
 	static public function translate_text($translated) {
 		$translated = str_ireplace("Benutzernamen können nur Buchstaben, Zahlen, \".\", \"-\" und @ enthalten", 'Benutzernamen dürfen nur kleingeschriebene Buchstaben (a-z) und Zahlen enthalten', $translated);
 		return $translated;
+	}
+
+	/**
+	 *
+	 * @since   0.2.2
+	 * @access  public
+	 * @static
+	 */
+	static public function check_registration( $registration_url ) {
+
+		$response = RW_Remote_Auth_Client_User::remote_say_hello();
+		var_dump( $response);
+		if ( $response->notice == 'success') {
+			return $registration_url;
+		} else {
+			return  __( 'Registration is disabled', RW_Remote_Auth_Client::$textdomain );
+		}
+
 	}
 }

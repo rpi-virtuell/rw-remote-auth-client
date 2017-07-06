@@ -149,6 +149,7 @@ class RW_Remote_Auth_Client {
 	    add_filter( 'http_request_args',            array( 'RW_Remote_Auth_Client_User','set_http_request_args'), 999,2);
 	    add_filter( 'user_new_form',                array( 'RW_Remote_Auth_Client_User','user_new_form_check_remote_auth_server'));
         add_filter( 'validate_username',            array( 'RW_Remote_Auth_Client_Helper', 'validate_username' ), 10, 2 );
+	    add_filter( 'register',                     array( 'RW_Remote_Auth_Client_Helper', 'check_registration' ) );
         //only for remotetest
         add_action( 'admin_init',                    array( 'RW_Remote_Auth_Client_Test', 'init' ) );
         add_filter('gettext', array( 'RW_Remote_Auth_Client_Helper', 'translate_text' ) );
