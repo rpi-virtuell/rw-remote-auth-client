@@ -41,6 +41,7 @@ Answer
 = 0.2.6 =
 * fix password overwrite on edit user profile
 * disable register link, when link to auth-server fails (needs update on RPI Multi-Instanz Navigation )
+* overwrite wpmu_active_signup when link to auth-server fails
 
 = 0.2.5 =
 * fix password overwrite

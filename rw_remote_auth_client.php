@@ -150,6 +150,8 @@ class RW_Remote_Auth_Client {
 	    add_filter( 'user_new_form',                array( 'RW_Remote_Auth_Client_User','user_new_form_check_remote_auth_server'));
         add_filter( 'validate_username',            array( 'RW_Remote_Auth_Client_Helper', 'validate_username' ), 10, 2 );
 	    add_filter( 'register',                     array( 'RW_Remote_Auth_Client_Helper', 'check_registration' ) );
+	    add_filter( 'wpmu_active_signup',           array( 'RW_Remote_Auth_Client_Helper', 'wpmu_active_signup' ) );
+
         //only for remotetest
         add_action( 'admin_init',                    array( 'RW_Remote_Auth_Client_Test', 'init' ) );
         add_filter('gettext', array( 'RW_Remote_Auth_Client_Helper', 'translate_text' ) );

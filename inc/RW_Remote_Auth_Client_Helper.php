@@ -164,7 +164,7 @@ class RW_Remote_Auth_Client_Helper {
 
 	/**
 	 *
-	 * @since   0.2.2
+	 * @since   0.2.6
 	 * @access  public
 	 * @static
 	 */
@@ -178,5 +178,21 @@ class RW_Remote_Auth_Client_Helper {
 			return  __( 'Registration is disabled', RW_Remote_Auth_Client::$textdomain );
 		}
 
+	}
+
+	/**
+	 *
+	 * @since   0.2.6
+	 * @access  public
+	 * @static
+	 */
+	static public function wpmu_active_signup( $active_signup ) {
+		$response = RW_Remote_Auth_Client_User::remote_say_hello();
+
+		if ( $response->notice == 'success') {
+			return $active_signup;
+		} else {
+			return 'none';
+		}
 	}
 }
