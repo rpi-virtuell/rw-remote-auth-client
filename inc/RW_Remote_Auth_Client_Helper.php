@@ -195,4 +195,61 @@ class RW_Remote_Auth_Client_Helper {
 			return 'none';
 		}
 	}
+
+
+	/**
+	 *
+	 * @since   0.2.7
+	 * @access  public
+	 * @static
+	 */
+	static public  function wp_ajax_autocomplete_user() {
+		if ( ! is_multisite() || ! current_user_can( 'promote_users' ) || wp_is_large_network( 'users' ) )
+			wp_die( -1 );
+
+		/** This filter is documented in wp-admin/user-new.php */
+		if ( ! current_user_can( 'manage_network_users' ) && ! apply_filters( 'autocomplete_users_for_site_admins', false ) )
+			wp_die( -1 );
+
+		$return = array();
+
+		// Check the type of request
+		// Current allowed values are `add` and `search`
+		if ( isset( $_REQUEST['autocomplete_type'] ) && 'search' === $_REQUEST['autocomplete_type'] ) {
+			$type = $_REQUEST['autocomplete_type'];
+		} else {
+			$type = 'add';
+		}
+
+		// Check the desired field for value
+		// Current allowed values are `user_email` and `user_login`
+		if ( isset( $_REQUEST['autocomplete_field'] ) && 'user_email' === $_REQUEST['autocomplete_field'] ) {
+			$field = $_REQUEST['autocomplete_field'];
+		} else {
+			$field = 'user_login';
+		}
+
+		// Exclude current users of this blog
+		if ( isset( $_REQUEST['site_id'] ) ) {
+			$id = absint( $_REQUEST['site_id'] );
+		} else {
+			$id = get_current_blog_id();
+		}
+
+		$include_blog_users = ( $type == 'search' ? get_users( array( 'blog_id' => $id, 'fields' => 'ID' ) ) : array() );
+		$exclude_blog_users = ( $type == 'add' ? get_users( array( 'blog_id' => $id, 'fields' => 'ID' ) ) : array() );
+
+
+		$request = array(   'cmd' => 'user_get_list',
+		                    'data' => array (
+			                    'term' => $_REQUEST['term'],
+			                    'include' =>$include_blog_users,
+			                    'exclude' => $exclude_blog_users,
+		                    )
+		);
+		$response =  RW_Remote_Auth_Client_User::remote_get( $request );
+
+
+		wp_die(  $response->message );
+	}
 }
