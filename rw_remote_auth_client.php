@@ -110,6 +110,9 @@ class RW_Remote_Auth_Client {
         // The Plugins Version
         self::$plugin_version = $this->get_plugin_header( 'Version' );
 
+	    // url to plugins root
+	    self::$plugin_url = plugins_url('/',__FILE__);
+
         // Load the textdomain
         $this->load_plugin_textdomain();
 
@@ -159,6 +162,25 @@ class RW_Remote_Auth_Client {
 
         remove_action( 'wp_ajax_autocomplete-user', 'wp_ajax_autocomplete_user', 1);
         add_action( 'wp_ajax_autocomplete-user', array( 'RW_Remote_Auth_Client_Helper','wp_ajax_autocomplete_user'),1);
+
+
+        /*check cas user via ajax*/
+        add_action( 'wp_enqueue_scripts',       array( 'RW_Remote_Auth_Client_Helper','enqueue_js' ) ,10);
+
+        add_action( 'admin_enqueue_scripts',    array( 'RW_Remote_Auth_Client_Helper','enqueue_js' ) ,9999);
+        add_action( 'wp_ajax_rw_remote_auth_client_cas_user_status' ,array( 'RW_Remote_Auth_Client_Helper','get_loggedin_cas_user_status' )  );
+
+	    //because WordPress does not automatically do ajax actions for users not logged-in,we need this as workarround
+	    if(isset($_REQUEST['action']) && $_REQUEST['action'] == 'rw_remote_auth_client_cas_user_status' ):
+		    do_action( 'wp_ajax_' . $_REQUEST['action'] );
+		    do_action( 'wp_ajax_nopriv_' . $_REQUEST['action'] );
+	    endif;
+
+
+	    /*check cas user via ajax end*/
+
+
+	    add_action( 'login_init',  array( 'RW_Remote_Auth_Client_Helper','catch_login_form_data' ) );
 
     }
 

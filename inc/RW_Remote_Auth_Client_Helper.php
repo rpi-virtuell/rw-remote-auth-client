@@ -252,4 +252,118 @@ class RW_Remote_Auth_Client_Helper {
 
 		wp_die(  $response->message );
 	}
+
+
+    /**
+     * Ajax Response
+     *
+     * Antwortet auf dei Ajaxanfrage, ob der angefragte
+     * (am login server aktuell angemeldete und per javascript übergebene)
+     * $_POST['user'] (user_login) auf dieser wp Instanz registriert ist
+     *
+     * @since   0.0.2
+     * @access  public
+     * @static
+     * @return array:
+     *          status: logged-in, not-logged-in-user, do-loggin, unknown user
+     *          name: display name
+     *
+     * @use_action: wp_ajax_rw_remote_auth_client_cas_user_status
+     */
+    public static function get_loggedin_cas_user_status(){
+
+        $login_name = strval( $_POST['user'] );
+
+        $user = get_user_by('login',$login_name);
+        if($user && is_a($user,'WP_User')){
+
+
+
+            if(is_user_logged_in() && wp_get_current_user() == $user){
+                $status = 'logged-in';
+            }elseif(is_user_logged_in() && wp_get_current_user() != $user){
+                $status = 'not-logged-in-user';
+            }else{
+                $status = 'do-loggin';
+            }
+
+            echo json_encode(array(
+                'success' =>  true
+            ,'name'=>$user->display_name
+            ,'status'=>$status
+            ,'avatar'=>get_avatar($user->ID)
+            ));
+        }else{
+            echo json_encode(array(
+                'success' =>  false
+            ,'name'=>'anonym'
+            ,'status'=> 'unknown user'
+
+            ));
+        }
+        die();
+    }
+
+    public static function enqueue_js() {
+
+	    wp_enqueue_script( 'rw_cas_accunt_script','//login.reliwerk.de/account.php',array() ,'0.0.2', true );
+    	wp_enqueue_script( 'rw_remote_auth_client_ajax_script',RW_Remote_Auth_Client::$plugin_url . '/js/javascript.js' ,array() ,'0.0.2', true);
+        wp_localize_script( 'rw_remote_auth_client_ajax_script', 'rw_rac_ajax', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );
+
+    }
+
+
+    public static function catch_login_form_data(){
+
+	    if ( ! empty( $_POST ) ) {
+
+		    // Sanitize the POST field
+			if(isset($_POST['log'])){
+				$user_login = $_POST['log'];
+				if(isset($_POST['pwd'])){
+					$user_password = $_POST['pwd'];
+				}
+				if(isset($_POST['redirect_to'])){
+					$redirect_to = $_POST['redirect_to'];
+				}
+
+				?>
+				<html>
+					<body style="background-color: #1B638A; color:white">
+						<table height="100%" width="100%" style="font-family:Verdana, Arial, Helvetica, sans-serif">
+							<tr>
+								<td align="center" valign="middle">
+									Du wirst angemeldet ...
+									<form id="cas-login-form" action="https://login.reliwerk.de/wp-login.php" method="post">
+										<input type="hidden" name="log" value="<?php echo $user_login; ?>">
+										<input type="hidden" name="pwd" value="<?php echo $user_password; ?>">
+										<input type="hidden" name="redirect_to" value="https://login.reliwerk.de/wp-cas/login?service=<?php echo $redirect_to; ?>">
+										<input type="hidden" value="login" name="ag_type" />
+										<input type="hidden" value="1" name="ag_login_accept">
+										<input type="hidden" name="reauth" value="0">
+									</form>
+								</td>
+							</tr>
+						</table>
+						<script>
+		                    document.getElementById('cas-login-form').submit();
+						</script>
+					</body>
+				</html>
+						<?php
+				die();
+
+			}else{
+die('xx');
+			}
+
+
+		    // Generate email content
+		    // Send to appropriate email
+
+	    }
+		return;
+
+    }
+
 }
