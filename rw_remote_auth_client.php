@@ -123,6 +123,7 @@ class RW_Remote_Auth_Client {
         add_action( 'admin_init',                   array( 'RW_Remote_Auth_Client_Options', 'register_settings' ) );
         add_action( 'admin_menu',                   array( 'RW_Remote_Auth_Client_BPGroup', 'add_adminpage' ) );
         add_action( 'init',                         array( 'RW_Remote_Auth_Client', 'notice' ) );
+        add_action( 'init',                         array( 'RW_Remote_Auth_Client_Helper', 'init' ) );
 
         add_action( 'wp_redirect',                  array( 'RW_Remote_Auth_Client_User', 'add_existing_user'),10,2 );
         add_action( 'wpmu_validate_user_signup',    array( 'RW_Remote_Auth_Client_User', 'create_new_user'),10,1 );
@@ -136,13 +137,17 @@ class RW_Remote_Auth_Client {
 		    add_action( 'wp_login',                 array( 'RW_Remote_Auth_Client_User', 'set_password_from_loginserver' ), 10, 2 );
 		    add_action( 'profile_update',           array( 'RW_Remote_Auth_Client_User', 'change_password_on_login_server' ),10, 2 );
 		    add_action( 'password_reset',           array( 'RW_Remote_Auth_Client_User', 'reset_password_on_login_server' ),10, 2 );
-		    if ( is_multisite() ) {
-			    add_action( 'wpmu_new_user', array( 'RW_Remote_Auth_Client_User', 'create_mu_user_on_login_server' ) );
-		    } else {
-		        add_action( 'user_register',        array( 'RW_Remote_Auth_Client_User', 'create_user_on_login_server' ),10, 1 );
-		    }
+
 	    }
         add_filter( 'plugin_action_links_' . self::$plugin_base_name, array( 'RW_Remote_Auth_Client_Options', 'plugin_settings_link') );
+	    if ( is_multisite() ) {
+		    add_action( 'wpmu_new_user', array( 'RW_Remote_Auth_Client_User', 'create_mu_user_on_login_server' ) );
+	    } else {
+		    add_action( 'user_register',        array( 'RW_Remote_Auth_Client_User', 'create_user_on_login_server' ),10, 1 );
+	    }
+	    add_action( 'profile_update',        array( 'RW_Remote_Auth_Client_User', 'create_user_on_login_server' ),997, 1 );
+	    add_action( 'user_registration_after_save_profile_validation',        array( 'RW_Remote_Auth_Client_User', 'create_user_on_login_server' ),998, 1 );
+	    add_action( 'user_registration_after_register_user_action',        array( 'RW_Remote_Auth_Client_User', 'register_user' ),999, 3 );
 
 
 	    add_filter( 'http_request_args',            array( 'RW_Remote_Auth_Client_Helper', 'http_request_args' ), 9999 );
@@ -152,7 +157,7 @@ class RW_Remote_Auth_Client {
 	    add_filter( 'http_request_args',            array( 'RW_Remote_Auth_Client_User','set_http_request_args'), 999,2);
 	    add_filter( 'user_new_form',                array( 'RW_Remote_Auth_Client_User','user_new_form_check_remote_auth_server'));
         add_filter( 'validate_username',            array( 'RW_Remote_Auth_Client_Helper', 'validate_username' ), 10, 2 );
-	    add_filter( 'register',                     array( 'RW_Remote_Auth_Client_Helper', 'check_registration' ) );
+        add_filter( 'register',                     array( 'RW_Remote_Auth_Client_Helper', 'check_registration' ) );
 	    add_filter( 'wpmu_active_signup',           array( 'RW_Remote_Auth_Client_Helper', 'wpmu_active_signup' ) );
 
         //only for remotetest

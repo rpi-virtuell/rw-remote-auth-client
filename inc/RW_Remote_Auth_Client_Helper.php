@@ -3,6 +3,14 @@
 
 class RW_Remote_Auth_Client_Helper {
 
+
+	/**
+	 * called on Hook init
+	 */
+    static public function init(){
+	    add_shortcode( 'login-form',  array( 'RW_Remote_Auth_Client_Helper', 'login_form_shortcode'));
+    }
+
 	static public function manipulate_other_plugins() {
 
 		// Nur wenn Option gewählt.
@@ -315,18 +323,15 @@ class RW_Remote_Auth_Client_Helper {
 
     public static function catch_login_form_data(){
 
-	    if ( ! empty( $_POST ) ) {
+	    if ( ! empty( $_POST ) && !isset($_GET['wp']) ) {
 
-		    // Sanitize the POST field
-			if(isset($_POST['log'])){
-				$user_login = $_POST['log'];
-				if(isset($_POST['pwd'])){
-					$user_password = $_POST['pwd'];
-				}
+	        $redirect_to = '';
+		    if(isset($_POST['log']) && isset($_POST['pwd']) ){
+				$user_login     = $_POST['log'];
+				$user_password  = $_POST['pwd'];
 				if(isset($_POST['redirect_to'])){
 					$redirect_to = $_POST['redirect_to'];
 				}
-
 				?>
 				<html>
 					<body style="background-color: #1B638A; color:white">
@@ -350,20 +355,26 @@ class RW_Remote_Auth_Client_Helper {
 						</script>
 					</body>
 				</html>
-						<?php
+				<?php
 				die();
 
-			}else{
-die('xx');
 			}
-
-
-		    // Generate email content
-		    // Send to appropriate email
-
-	    }
+			return;
+        }
 		return;
 
     }
+
+
+	static public function login_form_shortcode() {
+
+		if ( is_user_logged_in() )
+			return '';
+
+		$html = wp_login_form( array( 'echo' => false ) );
+		$html .= '<a href ="'.wp_lostpassword_url().'">Passwort vergessen</a>';
+		return $html;
+	}
+
 
 }

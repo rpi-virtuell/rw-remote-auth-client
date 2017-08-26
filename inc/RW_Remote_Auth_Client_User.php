@@ -176,40 +176,49 @@ class RW_Remote_Auth_Client_User {
         return $result;
     }
 
-	/**
-	 * @param $user_id
-     * return bool
-	 */
-	public static function create_mu_user_on_login_server ( $user_id ) {
-		global $wpdb;
-	    $user = get_user_by( 'id', $user_id );
-		if ( is_object( $user)) {
-			// UserObject has wrong, temporary password
-			// Get correct password from signup table
-			$signup = $wpdb->get_row( $wpdb->prepare("SELECT * FROM $wpdb->signups WHERE user_email = %s", $user->user_email) );
-            if($signup){
-                $meta = maybe_unserialize($signup->meta);
-                if(is_array( $meta ) && isset( $meta['password']) ){
-                    $password = $meta['password'];
-                }else{
-                    $password =$user->user_pass;
-                }
-            }else{
-                // system generated password on new users via backend created
-                $password =$user->user_pass;
-            }
-			return self::remote_user_register($user->user_login, $user->user_email, $password );
-		}
-        return false;
+	public static function register_user($data, $form_id, $user_id){
+    	self::create_user_on_login_server($user_id);
 	}
 
 	/**
 	 * @param $user_id
+     * return bool
 	 */
+	public static function create_user_on_login_server ( $user_id ) {
+		$user = get_user_by( 'id', $user_id );
+
+	    if ( is_a( $user, 'WP_User')) {
+			// UserObject has wrong, temporary password
+			// Get correct password from signup table
+			if(is_multisite()){
+				global $wpdb;
+
+				$signup = $wpdb->get_row( $wpdb->prepare("SELECT * FROM $wpdb->signups WHERE user_email = %s", $user->user_email) );
+				if($signup){
+					$meta = maybe_unserialize($signup->meta);
+					if(is_array( $meta ) && isset( $meta['password']) ){
+						$password = $meta['password'];
+					}else{
+						$password =$user->user_pass;
+					}
+				}else{
+					// system generated password on new users via backend created
+					$password =$user->user_pass;
+				}
+			}
+			return self::remote_user_register($user->user_login, $user->user_email, $password );
+		}
+		return false;
+	}
+
+	/**
+	 * @param $user_id
+
 	public static function create_user_on_login_server ( $user_id ) {
 		$user = get_user_by( 'id', $user_id );
 		return self::remote_user_register($user->user_login, $user->user_email, $user->user_pass );
 	}
+	 */
 
 	/**
 	 * @param int $user_id
@@ -284,7 +293,7 @@ class RW_Remote_Auth_Client_User {
 		    );
 
 		    $json = rawurlencode( json_encode( $request ) );
-
+		    file_put_contents('/tmp/register_user.log','request '.$request."\n",FILE_APPEND);
 		    $response = self::remote_get( $json  );
             if ( !is_wp_error( $response ) ) {
 

@@ -53,7 +53,7 @@ jQuery(document).ready(function($){
                     $('body').css('height','100%');
                     $('body').css('background-color','#1B638A');
                     $('body').css('color','white');
-                    $('body').html('<table height="100%" width="100%"><tr><td align="center" valign="middle">Die Anmeldung war erfolgreich ...</td></tr></table>');
+                    $('body').html('<table height="100%" width="100%"><tr><td align="center" valign="middle">Herzlich willkommen, '+ readData.name +'!</td></tr></table>');
                     $('body').fadeIn();
                     document.location.href='/wp-login.php';
                     break;
