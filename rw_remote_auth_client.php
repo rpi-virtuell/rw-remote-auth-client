@@ -5,7 +5,7 @@
  * Plugin URI:       https://github.com/rpi-virtuell/rw_remote_auth_client
  * Description:      Connect a wordpress instance to a RW Remoth Auth Server and syncronizes the userdata.
  * Author:           Frank Neumann-Staude
- * Version:          0.2.7
+ * Version:          0.2.8
  * Licence:          GPLv3
  * Author URI:       http://staude.net
  * Text Domain:      rw_remote_auth_client
@@ -22,7 +22,7 @@ class RW_Remote_Auth_Client {
      * @since   0.1
      * @access  public
      */
-    static public $version = "0.2.7";
+    static public $version = "0.2.8";
 
     /**
      * Singleton object holder
@@ -126,7 +126,7 @@ class RW_Remote_Auth_Client {
         add_action( 'init',                         array( 'RW_Remote_Auth_Client_Helper', 'init' ) );
 
         add_action( 'wp_redirect',                  array( 'RW_Remote_Auth_Client_User', 'add_existing_user'),10,2 );
-        add_action( 'wpmu_validate_user_signup',    array( 'RW_Remote_Auth_Client_User', 'create_new_user'),10,1 );
+        add_filter( 'wpmu_validate_user_signup',    array( 'RW_Remote_Auth_Client_User', 'create_new_user'),10,1 );
         add_action( 'user_profile_update_errors',   array( 'RW_Remote_Auth_Client_User', 'add_update_singlesite_user'),10,3 );
 
         add_action( 'admin_menu',                   array( 'RW_Remote_Auth_Client_Options', 'options_menu' ) );
@@ -145,9 +145,16 @@ class RW_Remote_Auth_Client {
 	    } else {
 		    add_action( 'user_register',        array( 'RW_Remote_Auth_Client_User', 'create_user_on_login_server' ),10, 1 );
 	    }
-	    add_action( 'profile_update',        array( 'RW_Remote_Auth_Client_User', 'create_user_on_login_server' ),997, 1 );
-	    add_action( 'user_registration_after_save_profile_validation',        array( 'RW_Remote_Auth_Client_User', 'create_user_on_login_server' ),998, 1 );
-	    add_action( 'user_registration_after_register_user_action',        array( 'RW_Remote_Auth_Client_User', 'register_user' ),999, 3 );
+	    //add_action( 'profile_update',        array( 'RW_Remote_Auth_Client_User', 'create_user_on_login_server' ),997, 1 );
+
+
+
+        //hooks of the the plugin user_registration
+	    add_action( 'user_registration_before_register_user_action',        array( 'RW_Remote_Auth_Client_User', 'validate_ur_user' ),10, 1 );
+	    add_action( 'user_registration_after_register_user_action',         array( 'RW_Remote_Auth_Client_User', 'register_ur_user' ),10, 3 );
+
+
+	    //add_action( 'user_registration_after_save_profile_validation',        array( 'RW_Remote_Auth_Client_User', 'create_user_on_login_server' ),998, 1 );
 
 
 	    add_filter( 'http_request_args',            array( 'RW_Remote_Auth_Client_Helper', 'http_request_args' ), 9999 );

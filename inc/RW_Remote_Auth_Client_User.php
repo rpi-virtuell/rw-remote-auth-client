@@ -176,11 +176,55 @@ class RW_Remote_Auth_Client_User {
         return $result;
     }
 
-	public static function register_user($data, $form_id, $user_id){
+	/**
+	 * @require_plugin user-registration
+	 *
+	 * @param $data
+	 * @param $form_id
+	 * @param $user_id
+	 * @useactionhook user_registration_after_register_user_action
+	 */
+	public static function register_ur_user($data, $form_id, $user_id){
     	self::create_user_on_login_server($user_id);
 	}
 
 	/**
+	 * @require_plugin user-registration
+	 * @param $userdata array
+	 * @todo enable Translation
+	 * @useactionhook user_registration_before_register_user_action
+	 */
+	public static function validate_ur_user($userdata){
+    	if(self::remote_user_exists($userdata['user_username']->value)){
+
+		    wp_send_json_error( array(
+			    'message' => array('Das Mitglied "'.$userdata['user_username']->value.'" existiert bereits.',
+				    'Bist du evtl. schon im rpi-virtuell Netzwerk registriert?',
+				    'Dann nutze das Login Formular.'
+
+			    ),
+			    'page'=>'<a href="'.wp_login_url().'">Anmelden</a>'
+		    ) );
+		    die();
+	    }elseif(self::remote_email_exists($userdata['user_email']->value)){
+
+		    wp_send_json_error( array(
+			    'message' => array('Ein Mitglied mit dieser E-Mail existiert bereits.',
+				    'Bist du evtl. schon im rpi-virtuell Netzwerk registriert?',
+				    'Dann nutze das Login Formular.'
+
+			    ),
+			    'page'=>'<a href="'.wp_login_url().'">Anmelden</a>'
+		    ) );
+		    die();
+	    }
+
+	}
+
+	/**
+	 *  creates user on remote auth server after client has registered
+	 *  on multisite it also syncronizes the password in the signups table
+	 *
 	 * @param $user_id
      * return bool
 	 */
@@ -211,19 +255,7 @@ class RW_Remote_Auth_Client_User {
 		return false;
 	}
 
-	/**
-	 * @param $user_id
 
-	public static function create_user_on_login_server ( $user_id ) {
-		$user = get_user_by( 'id', $user_id );
-		return self::remote_user_register($user->user_login, $user->user_email, $user->user_pass );
-	}
-	 */
-
-	/**
-	 * @param int $user_id
-	 * @param WP_User $old_user
-	 */
 	public static function change_password_on_login_server ( $user_id, $old_user ) {
 		$new_user = get_user_by( 'id', $user_id );
 		if ( $new_user->user_pass != $old_user->user_pass ) {
@@ -253,6 +285,26 @@ class RW_Remote_Auth_Client_User {
         return true;
 
     }
+
+	/**
+	 * @param $username
+	 *
+	 * @return null
+	 */
+	public static function remote_email_exists( $email ) {
+		$request = array(   'cmd' => 'email_exists',
+		                    'data' => array (
+			                    'user_email' => $email
+		                    )
+		);
+
+		$json = urlencode( json_encode( $request ) );
+		$response = self::remote_get( $json );
+		if ( !is_wp_error( $response ) ) {
+			return $response->message;
+		}
+		return false;
+	}
 
 	/**
 	 * @param $username
@@ -293,7 +345,7 @@ class RW_Remote_Auth_Client_User {
 		    );
 
 		    $json = rawurlencode( json_encode( $request ) );
-		    file_put_contents('/tmp/register_user.log','request '.$request."\n",FILE_APPEND);
+
 		    $response = self::remote_get( $json  );
             if ( !is_wp_error( $response ) ) {
 
@@ -580,9 +632,11 @@ class RW_Remote_Auth_Client_User {
      * else
      *      return and go and invite create a new user, if valid input
      *
-	 * @useaction wpmu_validate_user_signup
+	 * @usefilter wpmu_validate_user_signup
      *
      * @see add_existing_user_from_auth_server
+     *
+     * @todo enable Translation
 	 */
 	public static function create_new_user( $result  ){
 
@@ -590,17 +644,37 @@ class RW_Remote_Auth_Client_User {
             //solve input errors first
             return $result;
         }
-        //check both: username and email
-        if(!$redirect = self::add_existing_user_from_auth_server($result['user_email'])){
-            if(!$redirect = self::add_existing_user_from_auth_server($result['user_name'])){
-                return $result;
-            }else{
-                wp_redirect($redirect) ;
-            }
+
+        if($_POST['stage'] == 'validate-user-signup'){
+
+        	if(self::remote_user_exists($result['user_name'])){
+
+		        $result['errors']->add('user_name', ' Dieser Benutzername wurde im rpi-virtuell Netzwerk bereits registriert. <a href="'.wp_login_url().'">Anmelden</a>?');
+
+	        }
+	        if(self::remote_email_exists($result['user_email'])){
+
+		        $result['errors']->add('user_email', 'Diese E-mail wird im rpi-virtuell Netzwerk bereits verwendet.  <a href="\'.wp_login_url().\'">Anmelden</a>?');
+	        }
+
+	        return $result;
+
         }else{
-            wp_redirect($redirect) ;
+	        //user was added bei admin
+        	//check both: username and email
+	        if(!$redirect = self::add_existing_user_from_auth_server($result['user_email'])){
+		        if(!$redirect = self::add_existing_user_from_auth_server($result['user_name'])){
+			        return $result;
+		        }else{
+			        wp_redirect($redirect) ;
+		        }
+	        }else{
+		        wp_redirect($redirect) ;
+	        }
         }
 
+
+		return $result;
     }
 
     /**
@@ -647,18 +721,21 @@ class RW_Remote_Auth_Client_User {
      */
     protected static function invite_to_blog($user){
 
-        $newuser_key = substr( md5( $user->ID ), 0, 5 );
-        add_option( 'new_user_' . $newuser_key, array( 'user_id' => $user->ID, 'email' => $user->user_email, 'role' => $_REQUEST[ 'role' ] ) );
+	    if(function_exists('get_editable_roles' ) &&  isset( $_REQUEST[ 'role' ] ) ){
 
-        $roles = get_editable_roles();
-        $role = $roles[ $_REQUEST['role'] ];
+		    $newuser_key = substr( md5( $user->ID ), 0, 5 );
+	        add_option( 'new_user_' . $newuser_key, array( 'user_id' => $user->ID, 'email' => $user->user_email, 'role' => $_REQUEST[ 'role' ] ) );
 
-        $role_name =  wp_specialchars_decode( translate_user_role( $role['name'] ) );
-        $blogname = get_option( 'blogname' );
-        $subject = sprintf( __( '[%s] Joining confirmation' ), $blogname );
-        $achtivation_link = home_url( "/newbloguser/$newuser_key/" ) ;
+            $roles = get_editable_roles();
+	        $role = $roles[ $_REQUEST['role'] ];
 
-        self::mail_added_user($user->user_email, $subject, array($blogname,home_url(),$role_name,$achtivation_link));
+	        $role_name =  wp_specialchars_decode( translate_user_role( $role['name'] ) );
+	        $blogname = get_option( 'blogname' );
+	        $subject = sprintf( __( '[%s] Joining confirmation' ), $blogname );
+	        $achtivation_link = home_url( "/newbloguser/$newuser_key/" ) ;
+
+	        self::mail_added_user($user->user_email, $subject, array($blogname,home_url(),$role_name,$achtivation_link));
+	    }
     }
 
     /**

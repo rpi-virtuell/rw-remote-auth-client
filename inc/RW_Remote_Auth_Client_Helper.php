@@ -325,12 +325,15 @@ class RW_Remote_Auth_Client_Helper {
 
 	    if ( ! empty( $_POST ) && !isset($_GET['wp']) ) {
 
+
 	        $redirect_to = '';
 		    if(isset($_POST['log']) && isset($_POST['pwd']) ){
 				$user_login     = $_POST['log'];
 				$user_password  = $_POST['pwd'];
 				if(isset($_POST['redirect_to'])){
 					$redirect_to = $_POST['redirect_to'];
+					$login_url = urlencode(get_home_url().'/wp-login.php?redirect_to='.urlencode($redirect_to));
+
 				}
 				?>
 				<html>
@@ -342,9 +345,10 @@ class RW_Remote_Auth_Client_Helper {
 									<form id="cas-login-form" action="https://login.reliwerk.de/wp-login.php" method="post">
 										<input type="hidden" name="log" value="<?php echo $user_login; ?>">
 										<input type="hidden" name="pwd" value="<?php echo $user_password; ?>">
-										<input type="hidden" name="redirect_to" value="https://login.reliwerk.de/wp-cas/login?service=<?php echo $redirect_to; ?>">
+										<input type="hidden" name="redirect_to" value="https://login.reliwerk.de/wp-cas/login?service=<?php echo $login_url; ?>">
 										<input type="hidden" value="login" name="ag_type" />
 										<input type="hidden" value="1" name="ag_login_accept">
+										<input type="hidden" value="Anmelden" name="wp-submit">
 										<input type="hidden" name="reauth" value="0">
 									</form>
 								</td>
