@@ -380,5 +380,18 @@ class RW_Remote_Auth_Client_Helper {
 		return $html;
 	}
 
+	/**
+     * customized login form for user_registration
+	 * @param $located
+	 * @param $template_name
+	 *
+	 * @return file path
+	 */
+	static public function get_ur_template($located, $template_name){
+        if($template_name == 'myaccount/form-login.php'){
+	        $located = RW_Remote_Auth_Client::$plugin_dir.'/template/form-login.php';
+        }
+        return $located;
+    }
 
 }

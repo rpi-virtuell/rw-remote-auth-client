@@ -62,6 +62,13 @@ class RW_Remote_Auth_Client {
     static public $plugin_url = NULL;
 
     /**
+     * @var     mixed
+     * @since   2.8
+     * @access  public
+     */
+    static public $plugin_dir = NULL;
+
+    /**
      * @var     string
      * @since   0.1
      * @access  public
@@ -113,6 +120,9 @@ class RW_Remote_Auth_Client {
 	    // url to plugins root
 	    self::$plugin_url = plugins_url('/',__FILE__);
 
+	    // plugins root
+	    self::$plugin_dir = plugin_dir_path(__FILE__);
+
         // Load the textdomain
         $this->load_plugin_textdomain();
 
@@ -152,6 +162,7 @@ class RW_Remote_Auth_Client {
         //hooks of the the plugin user_registration
 	    add_action( 'user_registration_before_register_user_action',        array( 'RW_Remote_Auth_Client_User', 'validate_ur_user' ),10, 1 );
 	    add_action( 'user_registration_after_register_user_action',         array( 'RW_Remote_Auth_Client_User', 'register_ur_user' ),10, 3 );
+	    add_filter( 'ur_get_template',                                      array( 'RW_Remote_Auth_Client_Helper','get_ur_template' ),10, 2 );
 
 
 	    //add_action( 'user_registration_after_save_profile_validation',        array( 'RW_Remote_Auth_Client_User', 'create_user_on_login_server' ),998, 1 );
