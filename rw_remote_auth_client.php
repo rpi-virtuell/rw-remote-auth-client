@@ -178,6 +178,11 @@ class RW_Remote_Auth_Client {
         add_filter( 'register',                     array( 'RW_Remote_Auth_Client_Helper', 'check_registration' ) );
 	    add_filter( 'wpmu_active_signup',           array( 'RW_Remote_Auth_Client_Helper', 'wpmu_active_signup' ) );
 
+
+	    add_filter( 'lostpassword_url',           array( 'RW_Remote_Auth_Client_Helper', 'lostpassword_url' ),999,2 );
+
+
+
         //only for remotetest
         add_action( 'admin_init',                    array( 'RW_Remote_Auth_Client_Test', 'init' ) );
         add_filter('gettext', array( 'RW_Remote_Auth_Client_Helper', 'translate_text' ) );

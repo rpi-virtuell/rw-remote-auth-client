@@ -393,5 +393,26 @@ class RW_Remote_Auth_Client_Helper {
         }
         return $located;
     }
+    /**
+     * customized password url to cas
+	 * @param $located
+	 * @param $template_name
+	 *
+	 * @return file path
+	 */
+	static public function lostpassword_url($passwordurl, $redirect){
+
+	    $cas = get_option('wpCAS_settings');
+        if($cas){
+	        $sheme = $cas['server_port'] == '443'?'https':'http';
+            $cas_url = $sheme.'://'.$cas['server_hostname'].'/';
+			$cas_login_url = $cas_url.'wp-login.php?action=lostpassword&redirect_to=';
+	        $client_service_url = urlencode(get_home_url().'/wp-login.php?redirect_to='.$redirect);
+	        $redirect = $cas_url.str_replace('/','',$cas['server_path']).'/login?service='.$client_service_url;
+			$passwordurl = $cas_login_url . urlencode($redirect);
+        }
+
+        return $passwordurl;
+    }
 
 }
