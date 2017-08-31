@@ -38,6 +38,8 @@ Answer
 
 == Changelog ==
 
+= 0.2.9 =
+* fix undelete cookie
 
 = 0.2.8 =
 * add frond-end login form && register form via plugin user-registration support

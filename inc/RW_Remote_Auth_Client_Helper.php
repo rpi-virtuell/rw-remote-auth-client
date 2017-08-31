@@ -120,6 +120,7 @@ class RW_Remote_Auth_Client_Helper {
 			setcookie( RW_Remote_Auth_Client::$cookie_name,  null, time() - ( 60 * 60 ) );
 			return ( $redirect_url );
 		}
+		setcookie( RW_Remote_Auth_Client::$cookie_name,  null, time() - ( 60 * 60 ) );
 		return ( $redirect_url );
 	}
 
