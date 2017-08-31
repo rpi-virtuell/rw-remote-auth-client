@@ -9,6 +9,12 @@ class RW_Remote_Auth_Client_Helper {
 	 */
     static public function init(){
 	    add_shortcode( 'login-form',  array( 'RW_Remote_Auth_Client_Helper', 'login_form_shortcode'));
+	    
+	    //redirect  to front page if user has no access or role in backend
+	    add_action( 'admin_page_access_denied' ,function(){
+		    wp_redirect( get_home_url() );
+		    exit;
+	    });
     }
 
 	static public function manipulate_other_plugins() {
