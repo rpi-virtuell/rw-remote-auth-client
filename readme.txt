@@ -3,7 +3,7 @@ Contributors: f.staude, johappel
 Tags: singleSignOn, wordpress network, cloud blogging
 Requires at least: 4.0
 Tested up to: 4.8.1
-Stable tag: 0.2.7
+Stable tag: 0.2.9
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -38,6 +38,8 @@ Answer
 
 == Changelog ==
 
+= 0.2.9 =
+* fix undelete cookie
 
 = 0.2.8 =
 * add frond-end login form && register form via plugin user-registration support
