@@ -38,6 +38,9 @@ Answer
 
 == Changelog ==
 
+= 0.2.10 =
+* fix lost password after registration 
+
 = 0.2.9 =
 * fix undelete cookie
 
