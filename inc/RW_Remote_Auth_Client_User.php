@@ -234,8 +234,11 @@ class RW_Remote_Auth_Client_User {
 	    if ( is_a( $user, 'WP_User')) {
 			// UserObject has wrong, temporary password
 			// Get correct password from signup table
-			if(is_multisite()){
-				global $wpdb;
+
+		    global $wpdb;
+
+		    if ( $wpdb->get_var( "SHOW TABLES LIKE '%_signups'" ) ) {
+
 
 				$signup = $wpdb->get_row( $wpdb->prepare("SELECT * FROM $wpdb->signups WHERE user_email = %s", $user->user_email) );
 				if($signup){
