@@ -5,7 +5,7 @@
  * Plugin URI:       https://github.com/rpi-virtuell/rw_remote_auth_client
  * Description:      Connect a wordpress instance to a RW Remoth Auth Server and syncronizes the userdata.
  * Author:           Frank Neumann-Staude
- * Version:          0.2.10
+ * Version:          0.2.11
  * Licence:          GPLv3
  * Author URI:       http://staude.net
  * Text Domain:      rw_remote_auth_client
@@ -22,7 +22,7 @@ class RW_Remote_Auth_Client {
      * @since   0.1
      * @access  public
      */
-    static public $version = "0.2.10";
+    static public $version = "0.2.11";
 
     /**
      * Singleton object holder
@@ -166,21 +166,27 @@ class RW_Remote_Auth_Client {
 
 
 	    //add_action( 'user_registration_after_save_profile_validation',        array( 'RW_Remote_Auth_Client_User', 'create_user_on_login_server' ),998, 1 );
+	    add_action( 'admin_notices',                array( 'RW_Remote_Auth_Client_Helper', 'check_remote_connetion' ));
 
-
-	    add_filter( 'http_request_args',            array( 'RW_Remote_Auth_Client_Helper', 'http_request_args' ), 9999 );
+        add_filter( 'http_request_args',            array( 'RW_Remote_Auth_Client_Helper', 'http_request_args' ), 9999 );
 	    add_filter( 'login_redirect',               array( 'RW_Remote_Auth_Client_Helper', 'login_redirect' ), 10, 3 );
         add_action( 'login_init',                   array( 'RW_Remote_Auth_Client_Helper', 'validate_login' ),1  );
 	    add_action( 'rw_auth_remote_check_server',  array( 'RW_Remote_Auth_Client_Installation', 'check_server') );
 	    add_filter( 'http_request_args',            array( 'RW_Remote_Auth_Client_User','set_http_request_args'), 999,2);
 	    add_filter( 'user_new_form',                array( 'RW_Remote_Auth_Client_User','user_new_form_check_remote_auth_server'));
         add_filter( 'validate_username',            array( 'RW_Remote_Auth_Client_Helper', 'validate_username' ), 10, 2 );
-        add_filter( 'register',                     array( 'RW_Remote_Auth_Client_Helper', 'check_registration' ) );
-	    add_filter( 'wpmu_active_signup',           array( 'RW_Remote_Auth_Client_Helper', 'wpmu_active_signup' ) );
+        add_filter( 'wpmu_active_signup',           array( 'RW_Remote_Auth_Client_Helper', 'wpmu_active_signup' ) );
 
 
-	    add_filter( 'lostpassword_url',           array( 'RW_Remote_Auth_Client_Helper', 'lostpassword_url' ),999,2 );
+	    add_filter( 'lostpassword_url',             array( 'RW_Remote_Auth_Client_Helper', 'lostpassword_url' ),999,2 );
 
+	    add_filter( 'register',                     array( 'RW_Remote_Auth_Client_Helper', 'check_registration' ) );
+	    add_filter( 'register_url',                 array( 'RW_Remote_Auth_Client_Helper', 'check_registration' ) );
+
+	    add_filter( 'login_form_register',          array( 'RW_Remote_Auth_Client_User', 'check_users_can_register' ) );
+
+	    //stay on front page if no access to backend
+	    add_action( 'admin_page_access_denied' ,    array( 'RW_Remote_Auth_Client_Helper', 'stay_at_frontpage'));
 
 
         //only for remotetest

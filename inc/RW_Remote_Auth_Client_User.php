@@ -625,6 +625,19 @@ class RW_Remote_Auth_Client_User {
         }
     }
 
+	/**
+	 * usees action login_form_register
+	 */
+
+    public static function check_users_can_register(){
+
+	    $servercheck = RW_Remote_Auth_Client_User::remote_say_hello();
+	    if($servercheck->notice != success){
+		    wp_redirect( home_url( '/?message=register_disabled' ) );
+		    exit();
+	    }
+    }
+
     /**
      * Adminpage: Create new User / Neuen Benutzer hinzufügen (multisite)
      *
@@ -646,6 +659,14 @@ class RW_Remote_Auth_Client_User {
         if($result['errors'] && count( $result['errors']->errors ) > 0){
             //solve input errors first
             return $result;
+        }
+
+		$servercheck = RW_Remote_Auth_Client_User::remote_say_hello();
+
+        if($servercheck->notice != 'success'){
+
+	        return new WP_Error( 'casfailed', __( "I've fallen and can't get up", "my_textdomain" ) );
+
         }
 
         if($_POST['stage'] == 'validate-user-signup'){

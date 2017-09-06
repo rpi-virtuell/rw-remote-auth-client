@@ -9,14 +9,17 @@ class RW_Remote_Auth_Client_Helper {
 	 */
     static public function init(){
 	    add_shortcode( 'login-form',  array( 'RW_Remote_Auth_Client_Helper', 'login_form_shortcode'));
-	    
-	    //redirect  to front page if user has no access or role in backend
-	    add_action( 'admin_page_access_denied' ,function(){
-		    wp_redirect( get_home_url() );
-		    exit;
-	    });
     }
 
+	/**
+     * redirects  to front page if user has no access or role in backend
+     *
+     * @use actionhook  admin_page_access_denied
+     */
+	static public function stay_at_frontpage(){
+		wp_redirect( get_home_url() );
+		exit;
+	}
 	static public function manipulate_other_plugins() {
 
 		// Nur wenn Option gewählt.
@@ -197,6 +200,26 @@ class RW_Remote_Auth_Client_Helper {
 
 	/**
 	 *
+	 * @since   0.2.11
+	 * @access  public
+	 * @static
+	 */
+	static public function check_remote_connetion(  ) {
+
+		$response = RW_Remote_Auth_Client_User::remote_say_hello();
+
+		if ( $response->notice != 'success') {
+			?>
+            <div class="notice notice-error is-dismissible">
+                <p><?php  _e( 'Remote-Connection to Loginserver failed. Registration is disabled! Client suspended?', RW_Remote_Auth_Client::$textdomain ); ?></p>
+            </div>
+			<?php
+		}
+
+	}
+
+	/**
+	 *
 	 * @since   0.2.6
 	 * @access  public
 	 * @static
@@ -343,29 +366,29 @@ class RW_Remote_Auth_Client_Helper {
 
 				}
 				?>
-				<html>
-					<body style="background-color: #1B638A; color:white">
-						<table height="100%" width="100%" style="font-family:Verdana, Arial, Helvetica, sans-serif">
-							<tr>
-								<td align="center" valign="middle">
-									Du wirst angemeldet ...
-									<form id="cas-login-form" action="https://login.reliwerk.de/wp-login.php" method="post">
-										<input type="hidden" name="log" value="<?php echo $user_login; ?>">
-										<input type="hidden" name="pwd" value="<?php echo $user_password; ?>">
-										<input type="hidden" name="redirect_to" value="https://login.reliwerk.de/wp-cas/login?service=<?php echo $login_url; ?>">
-										<input type="hidden" value="login" name="ag_type" />
-										<input type="hidden" value="1" name="ag_login_accept">
-										<input type="hidden" value="Anmelden" name="wp-submit">
-										<input type="hidden" name="reauth" value="0">
-									</form>
-								</td>
-							</tr>
-						</table>
-						<script>
-		                    document.getElementById('cas-login-form').submit();
-						</script>
-					</body>
-				</html>
+                <html style="height:100%">
+                    <body style="background-color: #1B638A; color:white;height:100%">
+                        <table height="100%" width="100%" style="font-family:Verdana, Arial, Helvetica, sans-serif;height:100%; width:100%;">
+                            <tr>
+                                <td align="center" valign="middle">
+                                    Du wirst angemeldet ...
+                                    <form id="cas-login-form" action="https://login.reliwerk.de/wp-login.php" method="post">
+                                        <input type="hidden" name="log" value="<?php echo $user_login; ?>">
+                                        <input type="hidden" name="pwd" value="<?php echo $user_password; ?>">
+                                        <input type="hidden" name="redirect_to" value="https://login.reliwerk.de/wp-cas/login?service=<?php echo $login_url; ?>">
+                                        <input type="hidden" value="login" name="ag_type" />
+                                        <input type="hidden" value="1" name="ag_login_accept">
+                                        <input type="hidden" value="Anmelden" name="wp-submit">
+                                        <input type="hidden" name="reauth" value="0">
+                                    </form>
+                                </td>
+                            </tr>
+                        </table>
+                    <script>
+                        document.getElementById('cas-login-form').submit();
+                    </script>
+                    </body>
+                </html>
 				<?php
 				die();
 

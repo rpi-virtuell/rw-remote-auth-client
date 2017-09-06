@@ -37,6 +37,9 @@ Answer
 
 
 == Changelog ==
+= 0.2.11 =
+* redirect frontend if no access
+* disable register form, displays admins message, when link to auth-server fails
 
 = 0.2.10 =
 * fix lost password after registration 
