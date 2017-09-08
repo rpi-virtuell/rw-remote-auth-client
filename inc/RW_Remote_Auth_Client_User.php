@@ -391,7 +391,9 @@ class RW_Remote_Auth_Client_User {
 	 * @param $user
      * @return bool
 	 */
-	public static function set_password_from_loginserver( $user_login, $user ) {
+	public static function set_password_from_loginserver( $user_login, $user=null ) {
+		if(!$user) return;
+		if(!$user_login) return;
 		global $wpdb;
 		if ( get_site_option( 'rw_remote_auth_client_bypass_admin' ) != 1 || ( get_site_option( 'rw_remote_auth_client_bypass_admin' ) == 1 &&   !current_user_can( 'Administrator' ) && !current_user_can( 'Super Admin' ) ) ) {
 			$data = self::remote_user_get_password( $user->user_login , true);
