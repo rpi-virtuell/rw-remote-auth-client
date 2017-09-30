@@ -71,6 +71,7 @@ jQuery(document).ready(function($){
     });
 
 
+    $('#adduser label[for=adduser-email]').html('Username oder E-Mail');
 
 });
 
