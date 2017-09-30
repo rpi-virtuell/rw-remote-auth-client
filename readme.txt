@@ -37,6 +37,10 @@ Answer
 
 
 == Changelog ==
+= 0.2.12 =
+* fix user add autocomplete
+* fix missing user creation on login server after activation
+
 = 0.2.11 =
 * redirect frontend if no access
 * disable register form, displays admins message, when link to auth-server fails

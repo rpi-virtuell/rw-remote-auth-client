@@ -5,7 +5,7 @@
  * Plugin URI:       https://github.com/rpi-virtuell/rw_remote_auth_client
  * Description:      Connect a wordpress instance to a RW Remoth Auth Server and syncronizes the userdata.
  * Author:           Frank Neumann-Staude
- * Version:          0.2.11
+ * Version:          0.2.12
  * Licence:          GPLv3
  * Author URI:       http://staude.net
  * Text Domain:      rw_remote_auth_client
@@ -22,7 +22,7 @@ class RW_Remote_Auth_Client {
      * @since   0.1
      * @access  public
      */
-    static public $version = "0.2.11";
+    static public $version = "0.2.12";
 
     /**
      * Singleton object holder
@@ -177,6 +177,8 @@ class RW_Remote_Auth_Client {
         add_filter( 'validate_username',            array( 'RW_Remote_Auth_Client_Helper', 'validate_username' ), 10, 2 );
         add_filter( 'wpmu_active_signup',           array( 'RW_Remote_Auth_Client_Helper', 'wpmu_active_signup' ) );
 
+        //user creation on login server after activation
+        add_action( 'wpmu_activate_user',           array( 'RW_Remote_Auth_Client_User', 'create_user_on_login_server') );
 
 	    add_filter( 'lostpassword_url',             array( 'RW_Remote_Auth_Client_Helper', 'lostpassword_url' ),999,2 );
 
@@ -194,9 +196,11 @@ class RW_Remote_Auth_Client {
         add_filter('gettext', array( 'RW_Remote_Auth_Client_Helper', 'translate_text' ) );
         add_filter('ngettext', array( 'RW_Remote_Auth_Client_Helper', 'translate_text' ) );
 
-        remove_action( 'wp_ajax_autocomplete-user', 'wp_ajax_autocomplete_user', 1);
+	    //allow autocomplete users in add users form for site admins
+	    add_filter( 'autocomplete_users_for_site_admins', '__return_true');
+	    //modify autocomplete behavior and get user list from remote auth server
+	    remove_action( 'wp_ajax_autocomplete-user', 'wp_ajax_autocomplete_user', 1);
         add_action( 'wp_ajax_autocomplete-user', array( 'RW_Remote_Auth_Client_Helper','wp_ajax_autocomplete_user'),1);
-
 
         /*check cas user via ajax*/
         add_action( 'wp_enqueue_scripts',       array( 'RW_Remote_Auth_Client_Helper','enqueue_js' ) ,10);
