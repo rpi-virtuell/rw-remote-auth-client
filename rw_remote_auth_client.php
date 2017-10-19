@@ -151,7 +151,7 @@ class RW_Remote_Auth_Client {
 	    }
         add_filter( 'plugin_action_links_' . self::$plugin_base_name, array( 'RW_Remote_Auth_Client_Options', 'plugin_settings_link') );
 	    if ( is_multisite() ) {
-		    add_action( 'wpmu_new_user', array( 'RW_Remote_Auth_Client_User', 'create_mu_user_on_login_server' ) );
+		    add_action( 'wpmu_new_user', array( 'RW_Remote_Auth_Client_User', 'create_user_on_login_server' ) );
 	    } else {
 		    add_action( 'user_register',        array( 'RW_Remote_Auth_Client_User', 'create_user_on_login_server' ),10, 1 );
 	    }
