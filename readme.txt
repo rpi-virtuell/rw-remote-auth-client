@@ -2,7 +2,7 @@
 Contributors: f.staude, johappel
 Tags: singleSignOn, wordpress network, cloud blogging
 Requires at least: 4.0
-Tested up to: 4.8.1
+Tested up to: 4.8.2
 Stable tag: 0.2.9
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
@@ -37,6 +37,11 @@ Answer
 
 
 == Changelog ==
+= 0.3.0 =
+* add buddypress behavior: redirect user after login on home to last visited page
+* add ability to diconnect connected buddypress groups
+* add automatic check for new buddypress group members
+
 = 0.2.12 =
 * fix user add autocomplete
 * fix missing user creation on login server after activation

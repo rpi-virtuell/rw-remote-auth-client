@@ -80,7 +80,7 @@ class RW_Remote_Auth_Client_BPGroup
      */
     public static function get_group( $hash ){
 
-        $admin = wp_get_current_user();
+	    $admin = wp_get_current_user();
 
         $group = json_decode( base64_decode($hash) ) ;
 
@@ -96,7 +96,9 @@ class RW_Remote_Auth_Client_BPGroup
              )
         );
 
-        return self::remote_get( $group->url , $args );
+        $data = self::remote_get( $group->url , $args );
+
+        return $data;
 
     }
 
@@ -169,7 +171,7 @@ class RW_Remote_Auth_Client_BPGroup
                 $error = __('Error: No valid server response. Context Type: '. $response['headers']["content-type"], RW_Remote_Auth_Client::get_textdomain());
                 echo '<pre>';
                 echo 'url: ';
-                echo $url .'/'. $json;
+                echo $url .'/';
                 echo '<br>';
                 var_dump($response['body']);
                 echo '</pre>';
@@ -213,6 +215,30 @@ class RW_Remote_Auth_Client_BPGroup
      */
     protected static function the_form(){
 
+
+
+        if(isset($_POST['rw_remote_auth_client_bpgroups_key'])){
+	        check_admin_referer('rw_remote_auth_client_bpgroups_remove');
+	        $hash = $_POST['rw_remote_auth_client_bpgroups_key'];
+	        $remote = self::get_group( $hash );
+	        if(!is_wp_error($remote)){
+		        self::remove_hash($hash);
+		        /*
+                echo '<div style="padding:5px 10px; margin-bottom: 20px; background-color:white; ">
+                        Die Verbindung zur folgenden Buddypress Gruppe wurde beendet: <i style="color:red;">'.$remote->data->group->name.'</i>.<br> 
+                        Die Gruppenmitglieder werden dadurch nicht von dieser Seite gelöscht. Gehe auf "Benutzer", falls du die Rollen der Gruppenmitglieder ändern oder sie ganz löschen möchtest.
+                      </div>';
+                */
+		        echo '<div style="padding:5px 10px; margin-bottom: 20px; background-color:white; ">';
+                _e('The following Buddypress group has been disconnected from this site:', RW_Remote_Auth_Client::get_textdomain());
+                echo ' <i style="color:red;">'.$remote->data->group->name.'</i>.<br>';
+                _e('The group members are not deleted from this page. Go to "Users" if you want to change the roles of the group members or delete them altogether.', RW_Remote_Auth_Client::get_textdomain());
+		        echo '</div>';
+	        }
+
+
+
+        }
         if(isset($_POST['rw_remote_auth_client_bpgroups_code'])){
             check_admin_referer('rw_remote_auth_client_bpgroups_addnew');
             $hash = trim($_POST['rw_remote_auth_client_bpgroups_code']);
@@ -303,11 +329,15 @@ class RW_Remote_Auth_Client_BPGroup
             $user = get_user_by( 'login', $data->user_login );
             if ( $user === false  ) {
                 $user = wp_insert_user($user_details);
+	            return $user_login;
             }
             if ( !is_user_member_of_blog( $user->ID, get_current_blog_id() ) ) {
                 add_user_to_blog(  get_current_blog_id(), $user->ID , 'author');
+	            return $user_login;
             }
+            return false;
         }
+
     }
 
     /**
@@ -316,6 +346,7 @@ class RW_Remote_Auth_Client_BPGroup
     public static function groups_loop(){
 
         $groups = self::get_option_groups();
+        //echo '<pre>';     var_dump($groups); die();
         if($groups){
             foreach($groups as $key=>$group ){
                 self::the_group((object)$group->data->group);
@@ -323,8 +354,23 @@ class RW_Remote_Auth_Client_BPGroup
                 echo '<ul style="margin-left:30px">';
                     self::the_members((object)$group->data->member);
                 echo '</ul>';
+	            self::group_unlink_button($key);
             }
         }
+    }
+
+    private static function group_unlink_button($groupkey){
+
+        $form_action = admin_url('users.php?page=rw_remote_auth_client_bpgroups');
+        ?>
+        <form method="post" action="<?php echo $form_action; ?>">
+            <?php
+            wp_nonce_field('rw_remote_auth_client_bpgroups_remove');
+            ?>
+            <input type="hidden" name="rw_remote_auth_client_bpgroups_key" value="<?php echo $groupkey ; ?>" />
+            <input type="submit" class="button-primary" value="<?php _e('Disconnect group connection.',  RW_Remote_Auth_Client::get_textdomain())?>" />
+        </form>
+        <?php
     }
 
     /**
@@ -343,9 +389,11 @@ class RW_Remote_Auth_Client_BPGroup
             <?php endif; ?>
         </h3>
         <?php
-   }
+    }
 
-    /**
+
+
+		/**
      * Print a list of group members
      * @param $group_id
      *
@@ -354,18 +402,18 @@ class RW_Remote_Auth_Client_BPGroup
         if(isset($group)){
             $members =  $group;
             foreach($members as $member){
-                $user = get_user_by('login', $member->login_name );
+	            $user = get_user_by('login', $member->login_name );
                 if(!$user){
                     $user = new stdClass();
                     $user->name=$member->login_name ;
-                    $user->display_name = $member->login_name. '</a> <b>Fehler: Dem Autorisierungsdienst nicht bekannt</b>';
+                    $user->display_name = $member->login_name;
                 }elseif(!$user->display_name){
                     $user->display_name = $member->login_name;
                 }
-                self::add_member_to_blog($member->login_name);
+                $msg = self::add_member_to_blog($member->login_name)?' wurde hinzugefügt':'';
                 ?>
                 <li>
-                    <a href="<?php echo $member->profil_url ;?>"><?php echo $user->display_name ;?></a>
+                    <a href="<?php echo $member->profil_url ;?>"><?php echo $user->display_name ;?></a><b> <?php echo $msg; ?></b>
                 </li>
                 <?php
             }
@@ -393,7 +441,7 @@ class RW_Remote_Auth_Client_BPGroup
                     'name'=>$group->get_error_message()
                 );
             }else{
-                $groups[] = $group;
+                $groups[$hash] = $group;
             }
         }
         return $groups;
@@ -411,11 +459,56 @@ class RW_Remote_Auth_Client_BPGroup
         update_option('rw_remote_auth_client_bpgroups',$option);
         self::send_success($hash);
     }
-
+	/**
+	 * delete option
+	 *
+	 * @param $hash
+	 */
     protected static function remove_hash($hash){
         $option = get_option('rw_remote_auth_client_bpgroups');
         unset($option[ $hash ]);
         update_option('rw_remote_auth_client_bpgroups',$option);
     }
+
+	/**
+	 * check for new members from otional buddypress groups
+     *
+     * @use load-index.php
+     *
+     * @since 0.3.0
+     *
+	 */
+
+	public static function refesh_member_from_bp_groups(){
+
+		if(get_transient('refesh_member_from_bp_groups') == 1){
+			return;
+		}
+        $success = false; $added = array();
+		$groups = self::get_option_groups();
+		if($groups){
+			foreach($groups as $key=>$members ){
+			    if(isset($members->data->member) && is_array($members->data->member)){
+				    foreach($members->data->member as $member){
+					    $success = true;
+					    if(self::add_member_to_blog($member->login_name)){
+					        $added[] =   $member->login_name;
+					    }
+				    }
+                }
+
+			}
+		}
+
+		if($success && count($added)>0){
+            if(current_user_can('manage_options')){
+	            $adminling = '<a href="'.admin_url('users.php?page=rw_remote_auth_client_bpgroups').'">Mehr infos</a>';
+            }
+            $users = implode(', ', $added);
+	        RW_Remote_Auth_Client::notice_admin('success', 'Weitere Gruppenmitglieder wurden Benutzer dieser Seite: '.$users . '. ' . $adminling, true);
+        }
+		if ($success) set_transient('refesh_member_from_bp_groups', 1, 24 * HOUR_IN_SECONDS);
+
+	}
 
 }

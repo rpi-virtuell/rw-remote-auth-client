@@ -9,6 +9,7 @@ class RW_Remote_Auth_Client_Helper {
 	 */
     static public function init(){
 	    add_shortcode( 'login-form',  array( 'RW_Remote_Auth_Client_Helper', 'login_form_shortcode'));
+
     }
 
 	/**
@@ -97,16 +98,106 @@ class RW_Remote_Auth_Client_Helper {
 		}
 	}	
 	
+	/**
+	 * saves the last visited buddypress page to usermeta
+	 * perpares 
+	 * 
+	 * @since   0.3.0
+	 * @access  public
+	 * @static
+	 */
+	static public function save_last_visited_page( ) {
+		
+		if ( is_user_logged_in() && function_exists( 'is_buddypress' ) )  {
 
+			
+			if(substr($_SERVER['REQUEST_URI'], 0, 4) != '/wp-' && ! get_user_meta(get_current_user_id(),'rw_remote_auth_cli_user_switched')) {
+				
+				global  $wp;
+				if($wp->request == NULL){
+					delete_user_meta(get_current_user_id(), RW_Remote_Auth_Client::$usermeta_last_visit);	
+					//var_dump('usermeta_last_visit deleted');
+					return;
+				}
+				
+					
+				$donotsave_pages = array('invite-anyone','notifications','admin','settings','embed');
+				foreach($donotsave_pages as $donotsave){
+		
+					if(strpos($wp->request.'/','/'.$donotsave.'/')){
+						return;
+					}
+				}
+				
+				$pages = get_pages( array(
+					'post_type' => 'page',
+					'post_status' => 'publish'
+				));
+				
+				$slugs = array('docs');
+				foreach ($pages as $page){
+					$slugs[] = $page->post_name;
+				}
+				if(strpos($wp->request,'/')){
+					$slug = substr ($wp->request , 0 , strpos($wp->request,'/'));
+				}else{
+					$slug =$wp->request;
+				}
+				
+					
+				if (in_array($slug, $slugs)) {
+					$last_visit = home_url(add_query_arg(array(),$wp->request));	
+					update_user_meta(get_current_user_id(), RW_Remote_Auth_Client::$usermeta_last_visit, $last_visit, false);		
+					//var_dump($wp->request);
+				}
+			
+			}
+			
+			
+			
+		} 
+	}	
+	
+	/**
+	 * set usermeta "rw_remote_auth_cli_user_switched" true, if admin opens page as user 
+	 * @use_hooks switch_to_user from plugin user_switching
+	 * @since   0.3.0
+	 * @access  public
+	 * @static
+	*/
+	static public function switch_user( $user_id) {
+		
+        update_user_meta($user_id,'rw_remote_auth_cli_user_switched', 1);
+		
+	}
+	/**
+	 * delete usermeta "rw_remote_auth_cli_user_switched" on login or admin switch back 
+	 * @use_hooks wp_login and switch_back_user from plugin user_switching
+	 * @since 0.3.0
+	 * @access  public
+	 * @static
+	*/
+	static public function revoke_switched_user( $user_id ) {
+
+		$user_id = (!is_numeric($user_id))? get_current_user_id() : $user_id ;
+		
+        delete_user_meta($user_id,'rw_remote_auth_cli_user_switched');
+		
+	}
 	/**
 	 * prepare user redirection
 	 *
 	 * @since   0.1.2
 	 * @access  public
 	 * @static
-	 * @return  void
+	 * @return  string
 	 */
 	static public function login_redirect( $redirect_url, $requested_redirect_to, $user ) {
+		
+		
+		
+		$is_home = (strpos(get_site_url() . '/wp-login.php', $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ]) == 0)?true: false;
+		
 		if(!is_wp_error($user)){
 			wp_set_current_user( $user->ID );
 			wp_set_auth_cookie( $user->ID );
@@ -114,13 +205,28 @@ class RW_Remote_Auth_Client_Helper {
 		}else{
 			//@TODO handle error
 		}
+		
+		// in buddypress send user to the last page he has visited after he has logged in
+		if (  is_user_logged_in() && function_exists( 'is_buddypress' ) && $is_home ) {
+		
+			$last_url = get_user_meta($user->ID, RW_Remote_Auth_Client::$usermeta_last_visit, true);
+			
+			if(!empty($last_url)){
+				$redirect_url = $last_url;
+				$message = "weiter zur zuletzt besuchten Seite ...";
+			}else{
+				$redirect_url =    bp_get_activity_slug();
+				$message = "zu den Aktivitäten ...";
+			}
+			setcookie( RW_Remote_Auth_Client::$cookie_name,  null, time() - ( 60 * 60 ) );
+			
+			file_put_contents('/tmp/login_test.log', "\n".$redirect_url, FILE_APPEND);
+			
+			self::rw_splash_screen_redirector($message, $redirect_url);
+		}	
+		
 		if (  isset( $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ] ) && $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ] != ''  && $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ] != get_site_url() . '/' ) {
 			$redirect_url = $_COOKIE[RW_Remote_Auth_Client::$cookie_name];
-			setcookie( RW_Remote_Auth_Client::$cookie_name,  null, time() - ( 60 * 60 ) );
-			return ( $redirect_url );
-		}
-		if (  is_user_logged_in() && function_exists( 'is_buddypress' ) && $_COOKIE[ RW_Remote_Auth_Client::$cookie_name ] == get_site_url() . '/') {
-			$redirect_url =    bp_get_activity_root_slug();
 			setcookie( RW_Remote_Auth_Client::$cookie_name,  null, time() - ( 60 * 60 ) );
 			return ( $redirect_url );
 		}
@@ -445,4 +551,32 @@ class RW_Remote_Auth_Client_Helper {
         return $passwordurl;
     }
 
+
+	/**
+	 * replaces wp_redirect via javascript and splashscreen message
+	 * @since 0.3.0
+	 */
+	static public function rw_splash_screen_redirector($message, $redirect){ 
+		?>
+		<html style="height 100%">
+			<body style="height 100%; background-color:#1B638A; color:white; font-family:Verdana;">
+				<table height="100%" width="100%" style="with:100%; height:100%; border:0">
+					<tr>
+						<td style="with:100%; height:100%; border:0; color:white; vertical-align:middle" align="center" valign="middle">
+							<center><?php echo $message; ?></center>
+						</td>
+					</tr>
+				</table>
+				<script>
+					setTimeout(function(){
+						location.href = '<?php echo $redirect; ?>';	
+					},0);
+					
+				</script>
+			</body>
+		</html>
+		
+		<?php
+		die();
+	}
 }

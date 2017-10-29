@@ -5,7 +5,7 @@
  * Plugin URI:       https://github.com/rpi-virtuell/rw_remote_auth_client
  * Description:      Connect a wordpress instance to a RW Remoth Auth Server and syncronizes the userdata.
  * Author:           Frank Neumann-Staude
- * Version:          0.2.12
+ * Version:          0.3.0
  * Licence:          GPLv3
  * Author URI:       http://staude.net
  * Text Domain:      rw_remote_auth_client
@@ -22,7 +22,7 @@ class RW_Remote_Auth_Client {
      * @since   0.1
      * @access  public
      */
-    static public $version = "0.2.12";
+    static public $version = "0.3.0";
 
     /**
      * Singleton object holder
@@ -88,6 +88,12 @@ class RW_Remote_Auth_Client {
 	 * @access  public
 	 */
     static public $cookie_name = 'remote_login_referrer';
+    /**
+	 * @var     string
+	 * @since   0.3.0
+	 * @access  public
+	 */
+    static public $usermeta_last_visit = 'rw_last_visited_page';
 
     /**
 	 * @var     string
@@ -134,6 +140,7 @@ class RW_Remote_Auth_Client {
         add_action( 'admin_menu',                   array( 'RW_Remote_Auth_Client_BPGroup', 'add_adminpage' ) );
         add_action( 'init',                         array( 'RW_Remote_Auth_Client', 'notice' ) );
         add_action( 'init',                         array( 'RW_Remote_Auth_Client_Helper', 'init' ) );
+        add_action( 'template_redirect',            array( 'RW_Remote_Auth_Client_Helper', 'save_last_visited_page' ) );
 
         add_action( 'wp_redirect',                  array( 'RW_Remote_Auth_Client_User', 'add_existing_user'),10,2 );
         add_filter( 'wpmu_validate_user_signup',    array( 'RW_Remote_Auth_Client_User', 'create_new_user'),10,1 );
@@ -151,7 +158,7 @@ class RW_Remote_Auth_Client {
 	    }
         add_filter( 'plugin_action_links_' . self::$plugin_base_name, array( 'RW_Remote_Auth_Client_Options', 'plugin_settings_link') );
 	    if ( is_multisite() ) {
-		    add_action( 'wpmu_new_user', array( 'RW_Remote_Auth_Client_User', 'create_user_on_login_server' ) );
+		    add_action( 'wpmu_new_user', array( 'RW_Remote_Auth_Client_User', 'create_mu_user_on_login_server' ) );
 	    } else {
 		    add_action( 'user_register',        array( 'RW_Remote_Auth_Client_User', 'create_user_on_login_server' ),10, 1 );
 	    }
@@ -214,9 +221,16 @@ class RW_Remote_Auth_Client {
 		    do_action( 'wp_ajax_nopriv_' . $_REQUEST['action'] );
 	    endif;
 
+		
+		//set usermeta flag while user switching is active
+		add_action ('switch_to_user', array( 'RW_Remote_Auth_Client_Helper','switch_user' ) );
+		add_action ('switch_back_user', array( 'RW_Remote_Auth_Client_Helper','revoke_switched_user' ) );
+		add_action ('wp_login', array( 'RW_Remote_Auth_Client_Helper','revoke_switched_user' ) );
+		
 
 	    /*check cas user via ajax end*/
 
+	    add_action( 'load-index.php',  array( 'RW_Remote_Auth_Client_BPGroup','refesh_member_from_bp_groups' ) );
 
 	    add_action( 'login_init',  array( 'RW_Remote_Auth_Client_Helper','catch_login_form_data' ) );
 
