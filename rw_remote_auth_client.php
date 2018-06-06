@@ -186,6 +186,7 @@ class RW_Remote_Auth_Client {
 
         //user creation on login server after activation
         add_action( 'wpmu_activate_user',           array( 'RW_Remote_Auth_Client_User', 'create_user_on_login_server') );
+	add_action( 'wpmu_new_user',           		array( 'RW_Remote_Auth_Client_User', 'create_user_on_login_server') );
 
 	    add_filter( 'lostpassword_url',             array( 'RW_Remote_Auth_Client_Helper', 'lostpassword_url' ),999,2 );
 
