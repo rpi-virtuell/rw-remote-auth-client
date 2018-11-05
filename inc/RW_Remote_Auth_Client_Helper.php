@@ -201,7 +201,7 @@ class RW_Remote_Auth_Client_Helper {
 		if(!is_wp_error($user)){
 			wp_set_current_user( $user->ID );
 			wp_set_auth_cookie( $user->ID );
-			do_action( 'wp_login', $user->user_login );
+			do_action( 'wp_login', $user->user_login,  $user );
 		}else{
 			//@TODO handle error
 		}
