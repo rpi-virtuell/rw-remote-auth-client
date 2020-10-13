@@ -5,7 +5,7 @@
  * Plugin URI:       https://github.com/rpi-virtuell/rw_remote_auth_client
  * Description:      Connect a wordpress instance to a RW Remoth Auth Server and syncronizes the userdata.
  * Author:           Frank Neumann-Staude
- * Version:          0.3.1
+ * Version:          0.3.2
  * Licence:          GPLv3
  * Author URI:       http://staude.net
  * Text Domain:      rw_remote_auth_client
@@ -22,7 +22,7 @@ class RW_Remote_Auth_Client {
      * @since   0.1
      * @access  public
      */
-    static public $version = "0.3.1";
+    static public $version = "0.3.2";
 
     /**
      * Singleton object holder
@@ -82,24 +82,24 @@ class RW_Remote_Auth_Client {
      */
     static public $plugin_version = '';
 
-	/**
-	 * @var     string
-	 * @since   0.1.2
-	 * @access  public
-	 */
+    /**
+     * @var     string
+     * @since   0.1.2
+     * @access  public
+     */
     static public $cookie_name = 'remote_login_referrer';
     /**
-	 * @var     string
-	 * @since   0.3.0
-	 * @access  public
-	 */
+     * @var     string
+     * @since   0.3.0
+     * @access  public
+     */
     static public $usermeta_last_visit = 'rw_last_visited_page';
 
     /**
-	 * @var     string
-	 * @since   0.2.0
-	 * @access  public
-	 */
+     * @var     string
+     * @since   0.2.0
+     * @access  public
+     */
     static public $notice = '';
 
     /**
@@ -123,11 +123,11 @@ class RW_Remote_Auth_Client {
         // The Plugins Version
         self::$plugin_version = $this->get_plugin_header( 'Version' );
 
-	    // url to plugins root
-	    self::$plugin_url = plugins_url('/',__FILE__);
+        // url to plugins root
+        self::$plugin_url = plugins_url('/',__FILE__);
 
-	    // plugins root
-	    self::$plugin_dir = plugin_dir_path(__FILE__);
+        // plugins root
+        self::$plugin_dir = plugin_dir_path(__FILE__);
 
         // Load the textdomain
         $this->load_plugin_textdomain();
@@ -150,53 +150,53 @@ class RW_Remote_Auth_Client {
         add_action( 'network_admin_menu',           array( 'RW_Remote_Auth_Client_Options', 'options_menu' ) );
 
         add_action( 'plugins_loaded',               array( 'RW_Remote_Auth_Client_Helper', 'manipulate_other_plugins' ), 9999 );
-	    if ( ! isset( $_GET[ 'wp' ] ) ) { // CAS Maestro Bypass is active
-		    add_action( 'wp_login',                 array( 'RW_Remote_Auth_Client_User', 'set_password_from_loginserver' ), 10, 2 );
-		    add_action( 'profile_update',           array( 'RW_Remote_Auth_Client_User', 'change_password_on_login_server' ),10, 2 );
-		    add_action( 'password_reset',           array( 'RW_Remote_Auth_Client_User', 'reset_password_on_login_server' ),10, 2 );
+        if ( ! isset( $_GET[ 'wp' ] ) ) { // CAS Maestro Bypass is active
+            add_action( 'wp_login',                 array( 'RW_Remote_Auth_Client_User', 'set_password_from_loginserver' ), 10, 2 );
+            add_action( 'profile_update',           array( 'RW_Remote_Auth_Client_User', 'change_password_on_login_server' ),10, 2 );
+            add_action( 'password_reset',           array( 'RW_Remote_Auth_Client_User', 'reset_password_on_login_server' ),10, 2 );
 
-	    }
+        }
         add_filter( 'plugin_action_links_' . self::$plugin_base_name, array( 'RW_Remote_Auth_Client_Options', 'plugin_settings_link') );
-	    if ( is_multisite() ) {
-		    add_action( 'wpmu_new_user', array( 'RW_Remote_Auth_Client_User', 'create_mu_user_on_login_server' ) );
-	    } else {
-		    add_action( 'user_register',        array( 'RW_Remote_Auth_Client_User', 'create_user_on_login_server' ),10, 1 );
-	    }
-	    //add_action( 'profile_update',        array( 'RW_Remote_Auth_Client_User', 'create_user_on_login_server' ),997, 1 );
+        if ( is_multisite() ) {
+            add_action( 'wpmu_new_user', array( 'RW_Remote_Auth_Client_User', 'create_mu_user_on_login_server' ) );
+        } else {
+            add_action( 'user_register',        array( 'RW_Remote_Auth_Client_User', 'create_user_on_login_server' ),10, 1 );
+        }
+        //add_action( 'profile_update',        array( 'RW_Remote_Auth_Client_User', 'create_user_on_login_server' ),997, 1 );
 
 
 
         //hooks of the the plugin user_registration
-	    add_action( 'user_registration_before_register_user_action',        array( 'RW_Remote_Auth_Client_User', 'validate_ur_user' ),10, 1 );
-	    add_action( 'user_registration_after_register_user_action',         array( 'RW_Remote_Auth_Client_User', 'register_ur_user' ),10, 3 );
-	    add_filter( 'ur_get_template',                                      array( 'RW_Remote_Auth_Client_Helper','get_ur_template' ),10, 2 );
+        add_action( 'user_registration_before_register_user_action',        array( 'RW_Remote_Auth_Client_User', 'validate_ur_user' ),10, 1 );
+        add_action( 'user_registration_after_register_user_action',         array( 'RW_Remote_Auth_Client_User', 'register_ur_user' ),10, 3 );
+        add_filter( 'ur_get_template',                                      array( 'RW_Remote_Auth_Client_Helper','get_ur_template' ),10, 2 );
 
 
-	    //add_action( 'user_registration_after_save_profile_validation',        array( 'RW_Remote_Auth_Client_User', 'create_user_on_login_server' ),998, 1 );
-	    add_action( 'admin_notices',                array( 'RW_Remote_Auth_Client_Helper', 'check_remote_connetion' ));
+        //add_action( 'user_registration_after_save_profile_validation',        array( 'RW_Remote_Auth_Client_User', 'create_user_on_login_server' ),998, 1 );
+        add_action( 'admin_notices',                array( 'RW_Remote_Auth_Client_Helper', 'check_remote_connetion' ));
 
         add_filter( 'http_request_args',            array( 'RW_Remote_Auth_Client_Helper', 'http_request_args' ), 9999 );
-	    add_filter( 'login_redirect',               array( 'RW_Remote_Auth_Client_Helper', 'login_redirect' ), 10, 3 );
+        add_filter( 'login_redirect',               array( 'RW_Remote_Auth_Client_Helper', 'login_redirect' ), 10, 3 );
         add_action( 'login_init',                   array( 'RW_Remote_Auth_Client_Helper', 'validate_login' ),1  );
-	    add_action( 'rw_auth_remote_check_server',  array( 'RW_Remote_Auth_Client_Installation', 'check_server') );
-	    add_filter( 'http_request_args',            array( 'RW_Remote_Auth_Client_User','set_http_request_args'), 999,2);
-	    add_filter( 'user_new_form',                array( 'RW_Remote_Auth_Client_User','user_new_form_check_remote_auth_server'));
+        add_action( 'rw_auth_remote_check_server',  array( 'RW_Remote_Auth_Client_Installation', 'check_server') );
+        add_filter( 'http_request_args',            array( 'RW_Remote_Auth_Client_User','set_http_request_args'), 999,2);
+        add_filter( 'user_new_form',                array( 'RW_Remote_Auth_Client_User','user_new_form_check_remote_auth_server'));
         add_filter( 'validate_username',            array( 'RW_Remote_Auth_Client_Helper', 'validate_username' ), 10, 2 );
         add_filter( 'wpmu_active_signup',           array( 'RW_Remote_Auth_Client_Helper', 'wpmu_active_signup' ) );
 
         //user creation on login server after activation
         add_action( 'wpmu_activate_user',           array( 'RW_Remote_Auth_Client_User', 'create_user_on_login_server') );
-	add_action( 'wpmu_new_user',           		array( 'RW_Remote_Auth_Client_User', 'create_user_on_login_server') );
+    add_action( 'wpmu_new_user',                array( 'RW_Remote_Auth_Client_User', 'create_user_on_login_server') );
 
-	    add_filter( 'lostpassword_url',             array( 'RW_Remote_Auth_Client_Helper', 'lostpassword_url' ),999,2 );
+        add_filter( 'lostpassword_url',             array( 'RW_Remote_Auth_Client_Helper', 'lostpassword_url' ),999,2 );
 
-	    add_filter( 'register',                     array( 'RW_Remote_Auth_Client_Helper', 'check_registration' ) );
-	    add_filter( 'register_url',                 array( 'RW_Remote_Auth_Client_Helper', 'check_registration' ) );
+        add_filter( 'register',                     array( 'RW_Remote_Auth_Client_Helper', 'check_registration' ) );
+        add_filter( 'register_url',                 array( 'RW_Remote_Auth_Client_Helper', 'check_registration' ) );
 
-	    add_filter( 'login_form_register',          array( 'RW_Remote_Auth_Client_User', 'check_users_can_register' ) );
+        add_filter( 'login_form_register',          array( 'RW_Remote_Auth_Client_User', 'check_users_can_register' ) );
 
-	    //stay on front page if no access to backend
-	    add_action( 'admin_page_access_denied' ,    array( 'RW_Remote_Auth_Client_Helper', 'stay_at_frontpage'));
+        //stay on front page if no access to backend
+        add_action( 'admin_page_access_denied' ,    array( 'RW_Remote_Auth_Client_Helper', 'stay_at_frontpage'));
 
 
         //only for remotetest
@@ -204,36 +204,35 @@ class RW_Remote_Auth_Client {
         add_filter('gettext', array( 'RW_Remote_Auth_Client_Helper', 'translate_text' ) );
         add_filter('ngettext', array( 'RW_Remote_Auth_Client_Helper', 'translate_text' ) );
 
-	    //allow autocomplete users in add users form for site admins
-	    add_filter( 'autocomplete_users_for_site_admins', '__return_true');
-	    //modify autocomplete behavior and get user list from remote auth server
-	    remove_action( 'wp_ajax_autocomplete-user', 'wp_ajax_autocomplete_user', 1);
+        //allow autocomplete users in add users form for site admins
+        add_filter( 'autocomplete_users_for_site_admins', '__return_true');
+        //modify autocomplete behavior and get user list from remote auth server
+        remove_action( 'wp_ajax_autocomplete-user', 'wp_ajax_autocomplete_user', 1);
         add_action( 'wp_ajax_autocomplete-user', array( 'RW_Remote_Auth_Client_Helper','wp_ajax_autocomplete_user'),1);
 
         /*check cas user via ajax*/
         add_action( 'wp_enqueue_scripts',       array( 'RW_Remote_Auth_Client_Helper','enqueue_js' ) ,10);
-
         add_action( 'admin_enqueue_scripts',    array( 'RW_Remote_Auth_Client_Helper','enqueue_js' ) ,9999);
         add_action( 'wp_ajax_rw_remote_auth_client_cas_user_status' ,array( 'RW_Remote_Auth_Client_Helper','get_loggedin_cas_user_status' )  );
 
-	    //because WordPress does not automatically do ajax actions for users not logged-in,we need this as workarround
-	    if(isset($_REQUEST['action']) && $_REQUEST['action'] == 'rw_remote_auth_client_cas_user_status' ):
-		    do_action( 'wp_ajax_' . $_REQUEST['action'] );
-		    do_action( 'wp_ajax_nopriv_' . $_REQUEST['action'] );
-	    endif;
+        //because WordPress does not automatically do ajax actions for users not logged-in,we need this as workarround
+        if(isset($_REQUEST['action']) && $_REQUEST['action'] == 'rw_remote_auth_client_cas_user_status' ):
+            do_action( 'wp_ajax_' . $_REQUEST['action'] );
+            do_action( 'wp_ajax_nopriv_' . $_REQUEST['action'] );
+        endif;
 
-		
-		//set usermeta flag while user switching is active
-		add_action ('switch_to_user', array( 'RW_Remote_Auth_Client_Helper','switch_user' ) );
-		add_action ('switch_back_user', array( 'RW_Remote_Auth_Client_Helper','revoke_switched_user' ) );
-		add_action ('wp_login', array( 'RW_Remote_Auth_Client_Helper','revoke_switched_user' ) );
-		
+        
+        //set usermeta flag while user switching is active
+        add_action ('switch_to_user', array( 'RW_Remote_Auth_Client_Helper','switch_user' ) );
+        add_action ('switch_back_user', array( 'RW_Remote_Auth_Client_Helper','revoke_switched_user' ) );
+        add_action ('wp_login', array( 'RW_Remote_Auth_Client_Helper','revoke_switched_user' ) );
+        
 
-	    /*check cas user via ajax end*/
+        /*check cas user via ajax end*/
 
-	    add_action( 'load-index.php',  array( 'RW_Remote_Auth_Client_BPGroup','refesh_member_from_bp_groups' ) );
+        add_action( 'load-index.php',  array( 'RW_Remote_Auth_Client_BPGroup','refesh_member_from_bp_groups' ) );
 
-	    add_action( 'login_init',  array( 'RW_Remote_Auth_Client_Helper','catch_login_form_data' ) );
+        add_action( 'login_init',  array( 'RW_Remote_Auth_Client_Helper','catch_login_form_data' ) );
 
     }
 
@@ -255,11 +254,11 @@ class RW_Remote_Auth_Client {
     /**
      * Load the localization
      *
-     * @since	0.1
-     * @access	public
-     * @uses	load_plugin_textdomain, plugin_basename
+     * @since   0.1
+     * @access  public
+     * @uses    load_plugin_textdomain, plugin_basename
      * @filters rw_remote_auth_client_translationpath path to translations files
-     * @return	void
+     * @return  void
      */
     public function load_plugin_textdomain() {
         load_plugin_textdomain( self::get_textdomain(), false, apply_filters ( 'rw_remote_auth_client_translationpath', dirname( plugin_basename( __FILE__ )) .  self::get_textdomain_path() ) );
@@ -269,10 +268,10 @@ class RW_Remote_Auth_Client {
      * Get a value of the plugin header
      *
      * @since   0.1
-     * @access	protected
-     * @param	string $value
-     * @uses	get_plugin_data, ABSPATH
-     * @return	string The plugin header value
+     * @access  protected
+     * @param   string $value
+     * @uses    get_plugin_data, ABSPATH
+     * @return  string The plugin header value
      */
     protected function get_plugin_header( $value = 'TextDomain' ) {
 
@@ -291,8 +290,8 @@ class RW_Remote_Auth_Client {
      *
      * @since   0.1
      * @static
-     * @access	public
-     * @return	string textdomain
+     * @access  public
+     * @return  string textdomain
      */
     public static function get_textdomain() {
         if( is_null( self::$textdomain ) )
@@ -306,8 +305,8 @@ class RW_Remote_Auth_Client {
      *
      * @since   0.1
      * @static
-     * @access	public
-     * @return	string Domain Path
+     * @access  public
+     * @return  string Domain Path
      */
     public static function get_textdomain_path() {
         return self::get_plugin_data( 'DomainPath' );
@@ -320,7 +319,7 @@ class RW_Remote_Auth_Client {
      * @uses    get_plugin_data
      * @access  public
      * @param   $value string, default = 'Version'
-     *		Name, PluginURI, Version, Description, Author, AuthorURI, TextDomain, DomainPath, Network, Title
+     *      Name, PluginURI, Version, Description, Author, AuthorURI, TextDomain, DomainPath, Network, Title
      * @return  string
      */
     public static function get_plugin_data( $value = 'Version' ) {
@@ -406,6 +405,6 @@ if ( class_exists( 'RW_Remote_Auth_Client' ) ) {
     RW_Remote_Auth_Client_Autoloader::register();
 
     register_activation_hook( __FILE__, array( 'RW_Remote_Auth_Client_Installation', 'on_activate' ) );
-    register_uninstall_hook(  __FILE__,	array( 'RW_Remote_Auth_Client_Installation', 'on_uninstall' ) );
+    register_uninstall_hook(  __FILE__, array( 'RW_Remote_Auth_Client_Installation', 'on_uninstall' ) );
     register_deactivation_hook( __FILE__, array( 'RW_Remote_Auth_Client_Installation', 'on_deactivation' ) );
 }
