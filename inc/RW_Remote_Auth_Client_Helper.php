@@ -201,7 +201,12 @@ class RW_Remote_Auth_Client_Helper {
 		if(!is_wp_error($user)){
 			wp_set_current_user( $user->ID );
 			wp_set_auth_cookie( $user->ID );
-			do_action( 'wp_login', $user->user_login,  $user );
+            if ( defined('NFW_LOGINHOOK') ) {
+                $NFW_LOGINHOOK = (int) NFW_LOGINHOOK;
+            } else {
+                $NFW_LOGINHOOK = -999999999;
+            }
+            remove_action( 'wp_login', 'nfw_login_hook', $NFW_LOGINHOOK  );
 		}else{
 			//@TODO handle error
 		}
@@ -556,7 +561,7 @@ class RW_Remote_Auth_Client_Helper {
 	 * replaces wp_redirect via javascript and splashscreen message
 	 * @since 0.3.0
 	 */
-	static public function rw_splash_screen_redirector($message, $redirect){ 
+	static public function rw_splash_screen_redirector($message, $redirect){
 		?>
 		<html style="height 100%">
 			<body style="height 100%; background-color:#1B638A; color:white; font-family:Verdana;">
