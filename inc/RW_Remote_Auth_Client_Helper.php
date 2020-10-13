@@ -206,7 +206,9 @@ class RW_Remote_Auth_Client_Helper {
             } else {
                 $NFW_LOGINHOOK = -999999999;
             }
-            remove_action( 'wp_login', 'nfw_login_hook', $NFW_LOGINHOOK  );
+            remove_action( 'wp_login', 'nfw_login_hook', $NFW_LOGINHOOK );
+			do_action( 'wp_login', $user->user_login,  $user );
+
 		}else{
 			//@TODO handle error
 		}
