@@ -170,7 +170,7 @@ msgstr "Url zur API des Autorisierungsdienstes"
 #: inc/RW_Remote_Auth_Client_Options.php:200
 msgid "Endpoint URL for API request."
 msgstr ""
-"Die Url zum Autorisierungsdienst (z.B.: http://login.reliwerk.de/rw_auth/ )"
+"Die Url zum Autorisierungsdienst (z.B.: http://konto.rpi-virtuell.de/rw_auth/ )"
 
 #: inc/RW_Remote_Auth_Client_Options.php:206
 msgid "API Key"

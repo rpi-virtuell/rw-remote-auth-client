@@ -2,15 +2,15 @@
 Contributors: f.staude, johappel
 Tags: singleSignOn, wordpress network, cloud blogging
 Requires at least: 4.0
-Tested up to: 4.8.2
-Stable tag: 0.3.1
+Tested up to: 5.5.3
+Stable tag: 0.3.3
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
 
 
 == Description ==
-
+depends on CAS-Maestro Plugin
 
 == Hooks ==
 
@@ -51,7 +51,7 @@ Answer
 * disable register form, displays admins message, when link to auth-server fails
 
 = 0.2.10 =
-* fix lost password after registration 
+* fix lost password after registration
 
 = 0.2.9 =
 * fix undelete cookie

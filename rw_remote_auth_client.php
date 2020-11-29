@@ -5,7 +5,7 @@
  * Plugin URI:       https://github.com/rpi-virtuell/rw_remote_auth_client
  * Description:      Connect a wordpress instance to a RW Remoth Auth Server and syncronizes the userdata.
  * Author:           Frank Neumann-Staude
- * Version:          0.3.2
+ * Version:          0.3.3
  * Licence:          GPLv3
  * Author URI:       http://staude.net
  * Text Domain:      rw_remote_auth_client
@@ -22,7 +22,7 @@ class RW_Remote_Auth_Client {
      * @since   0.1
      * @access  public
      */
-    static public $version = "0.3.2";
+    static public $version = "0.3.3";
 
     /**
      * Singleton object holder
@@ -221,12 +221,12 @@ class RW_Remote_Auth_Client {
             do_action( 'wp_ajax_nopriv_' . $_REQUEST['action'] );
         endif;
 
-        
+
         //set usermeta flag while user switching is active
         add_action ('switch_to_user', array( 'RW_Remote_Auth_Client_Helper','switch_user' ) );
         add_action ('switch_back_user', array( 'RW_Remote_Auth_Client_Helper','revoke_switched_user' ) );
         add_action ('wp_login', array( 'RW_Remote_Auth_Client_Helper','revoke_switched_user' ) );
-        
+
 
         /*check cas user via ajax end*/
 

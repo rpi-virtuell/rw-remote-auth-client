@@ -141,6 +141,47 @@ class RW_Remote_Auth_Client_Options {
 
     }
 
+    /**
+	 * returns the login_server_endpoint_url
+     * @since   0.1
+     * @access  public
+     *
+	 * @return mixed|string
+	 */
+
+	static function get_server_endpoint_url(){
+		$server_endpoint_url = get_site_option( 'rw_remote_auth_client_options_server_endpoint_url' );
+		$server_endpoint_disabled = '';
+		if ( defined( 'RW_REMOTE_AUTH_SERVER_API_ENDPOINT' ) ) {
+			// Endpoint is set in wp_config
+			$server_endpoint_url = RW_REMOTE_AUTH_SERVER_API_ENDPOINT;
+		}
+		return $server_endpoint_url;
+	}
+
+	/**
+     * returns the Host of the login_server_endpoint_url
+	 * @since   0.1
+	 * @access  public
+	 *
+	 * @return mixed|string
+	 */
+
+	static function get_login_server(){
+		$server_endpoint_url  = self::get_server_endpoint_url();
+		if($server_endpoint_url){
+
+		    $uri = parse_url($server_endpoint_url);
+
+
+		    return $uri['host'];
+
+        }else{
+		    return 'konto.rpi-virtuell.de';
+        }
+
+	}
+
 
     /**
      * Generate the options page for the plugin
@@ -164,12 +205,10 @@ class RW_Remote_Auth_Client_Options {
         if ( !current_user_can( 'manage_options' ) )  {
             wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
         }
-        $server_endpoint_url = get_site_option( 'rw_remote_auth_client_options_server_endpoint_url' );
-        $server_endpoint_disabled = '';
-        if ( defined( 'RW_REMOTE_AUTH_SERVER_API_ENDPOINT' ) ) {
-            // Endpoint is set in wp_config
-            $server_endpoint_url = RW_REMOTE_AUTH_SERVER_API_ENDPOINT;
-            $server_endpoint_disabled = ' disabled ';
+
+	    $server_endpoint_url = self::get_server_endpoint_url();
+	    if ( defined( 'RW_REMOTE_AUTH_SERVER_API_ENDPOINT' ) ) {
+		    $server_endpoint_disabled = 'disabled';
         }
 
         ?>
@@ -219,6 +258,7 @@ class RW_Remote_Auth_Client_Options {
                                 <p id="endpoint_url-description" class="description"><?php _e( 'URL for register hint page', RW_Remote_Auth_Client::$textdomain); ?></p>
                             </td>
                         </tr>
+
 	                    <tr>
 		                    <th scope="row">
 			                    <label for="rw_remote_auth_client_bypass_admin"><?php _e( 'Don\'t overwrite admin password', RW_Remote_Auth_Client::$textdomain ); ?></label>
