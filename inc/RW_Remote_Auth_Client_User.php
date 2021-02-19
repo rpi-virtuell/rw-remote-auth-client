@@ -87,8 +87,8 @@ class RW_Remote_Auth_Client_User {
 			$domain = parse_url(network_site_url( ), PHP_URL_HOST);
             $key = get_site_option('rw_remote_auth_client_api_key');
 
-			//modify user-agent with @user_agend_args
-            $args['user-agent']=  'RW_Remote_Auth_Client '.RW_Remote_Auth_Client::$version	.';' . $domain .';'. $_SERVER['SERVER_ADDR'] .';'. $key;
+            //modify user-agent with @user_agend_args
+            $args['user-agent']=  'RW_Remote_Auth_Client '.RW_Remote_Auth_Client::$version	.';' . $domain .';'. $_SERVER['SERVER_ADDR'] .';'. base64_encode($key);
 
 			$args['sslverify']=  false;
 
