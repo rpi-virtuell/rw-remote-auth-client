@@ -1,16 +1,17 @@
 === RW Remote Auth Client ===
 Contributors: f.staude, johappel
 Tags: singleSignOn, wordpress network, cloud blogging
-Requires at least: 4.0
-Tested up to: 5.5.3
-Stable tag: 0.3.3
+Requires at least: 5.5
+Tested up to: 5.6.2
+Stable tag: 0.4.0
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
 
 
 == Description ==
-depends on CAS-Maestro Plugin
+depends on a CAS Client Plugin
+
 
 == Hooks ==
 
@@ -37,6 +38,10 @@ Answer
 
 
 == Changelog ==
+= 0.4.0 =
+* change to depencies to cas plugin Authorizer(recomended)
+
+
 = 0.3.0 =
 * add buddypress behavior: redirect user after login on home to last visited page
 * add ability to diconnect connected buddypress groups

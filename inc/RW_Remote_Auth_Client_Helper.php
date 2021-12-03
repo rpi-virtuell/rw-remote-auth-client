@@ -9,8 +9,10 @@ class RW_Remote_Auth_Client_Helper {
 	 */
     static public function init(){
 	    add_shortcode( 'login-form',  array( 'RW_Remote_Auth_Client_Helper', 'login_form_shortcode'));
-	    wp_deregister_script('jquery');
-	    wp_enqueue_script('jquery', 'https://rpi-virtuell.de/jquery.min.js', array(), null, true);
+	    if(!is_admin()){
+		    wp_deregister_script('jquery');
+		    wp_enqueue_script('jquery', 'https://rpi-virtuell.de/jquery.min.js', array(), null, true);
+	    }
 
     }
 
@@ -428,9 +430,8 @@ class RW_Remote_Auth_Client_Helper {
         $login_name = strval( $_POST['user'] );
 
         $user = get_user_by('login',$login_name);
+
         if($user && is_a($user,'WP_User')){
-
-
 
             if(is_user_logged_in() && wp_get_current_user() == $user){
                 $status = 'logged-in';
@@ -441,17 +442,18 @@ class RW_Remote_Auth_Client_Helper {
             }
 
             echo json_encode(array(
-                'success' =>  true
-            ,'name'=>$user->display_name
-            ,'status'=>$status
-            ,'avatar'=>get_avatar($user->ID)
+                 'success' =>  true
+                ,'name'=>$user->display_name
+                ,'status'=>$status
+                ,'avatar'=>get_avatar($user->ID)
             ));
+
         }else{
+
             echo json_encode(array(
                 'success' =>  false
-            ,'name'=>'anonym'
-            ,'status'=> 'unknown user'
-
+                ,'name'=>'anonym'
+                ,'status'=> 'unknown user'
             ));
         }
         die();
@@ -472,7 +474,7 @@ class RW_Remote_Auth_Client_Helper {
 
     public static function catch_login_form_data(){
 
-	    if ( ! empty( $_POST ) && !isset($_GET['wp']) ) {
+	    if ( ! empty( $_POST ) && ( !isset($_GET['wp']) || isset( $_GET['external'] ) && $_GET['external']!='wordpress' )) {
 
 	        $wpCAS_settings = get_option('wpCAS_settings');
 	      //  var_dump($wpCAS_settings);die();
@@ -481,12 +483,14 @@ class RW_Remote_Auth_Client_Helper {
 		    if(isset($_POST['log']) && isset($_POST['pwd']) ){
 				$user_login     = $_POST['log'];
 				$user_password  = $_POST['pwd'];
+
 				if(isset($_POST['redirect_to'])){
 					$redirect_to = $_POST['redirect_to'];
-					$login_url = urlencode(get_home_url().'/wp-login.php?redirect_to='.urlencode($redirect_to));
+					$login_url = urlencode(get_home_url().'/wp-login.php&redirect_to='.urlencode($redirect_to));
 
 				}
 				$login_server = RW_Remote_Auth_Client_Options::get_login_server();
+
 				?>
                 <html style="height:100%">
                     <body style="background-color: #1B638A; color:white;height:100%">
@@ -554,16 +558,27 @@ class RW_Remote_Auth_Client_Helper {
 	 */
 	static public function lostpassword_url($passwordurl, $redirect){
 
-	    $cas = get_option('wpCAS_settings');
-        if($cas){
-	        $sheme = $cas['server_port'] == '443'?'https':'http';
-            $cas_url = $sheme.'://'.$cas['server_hostname'].'/';
+		$cas = get_option('auth_settings');
+		if($cas){
+		    $sheme = $cas['cas_port'] == '443'?'https':'http';
+			$cas_url = $sheme.'://'.$cas['cas_host'].'/';
 			$cas_login_url = $cas_url.'wp-login.php?action=lostpassword&redirect_to=';
-	        $client_service_url = urlencode(get_home_url().'/wp-login.php?redirect_to='.$redirect);
-	        $redirect = $cas_url.str_replace('/','',$cas['server_path']).'/login?service='.$client_service_url;
+			$client_service_url = urlencode(get_home_url().'/wp-login.php?redirect_to='.$redirect);
+			$redirect = $cas_url.str_replace('/','',$cas['cas_path']).'/login?service='.$client_service_url;
 			$passwordurl = $cas_login_url . urlencode($redirect);
-        }
-
+		}else{
+		    //Abwärtscompatibilität zu cas maestro
+            //
+			$cas = get_option('wpCAS_settings');
+			if($cas){
+				$sheme = $cas['server_port'] == '443'?'https':'http';
+				$cas_url = $sheme.'://'.$cas['server_hostname'].'/';
+				$cas_login_url = $cas_url.'wp-login.php?action=lostpassword&redirect_to=';
+				$client_service_url = urlencode(get_home_url().'/wp-login.php?redirect_to='.$redirect);
+				$redirect = $cas_url.str_replace('/','',$cas['server_path']).'/login?service='.$client_service_url;
+				$passwordurl = $cas_login_url . urlencode($redirect);
+			}
+		}
         return $passwordurl;
     }
 
@@ -574,12 +589,12 @@ class RW_Remote_Auth_Client_Helper {
 	 */
 	static public function rw_splash_screen_redirector($message, $redirect){
 		?>
-		<html style="height 100%">
+		<html style="height 100%!important;">
 			<body style="height 100%; background-color:#1B638A; color:white; font-family:Verdana;">
-				<table height="100%" width="100%" style="with:100%; height:100%; border:0">
+				<table height="100%" width="100%" style="with:100%; height:100%!important; border:0;">
 					<tr>
-						<td style="with:100%; height:100%; border:0; color:white; vertical-align:middle" align="center" valign="middle">
-							<center><?php echo $message; ?></center>
+						<td style="with:100%; height:100%!important; border:0; color:white; vertical-align:middle" align="center" valign="middle">
+							<?php echo $message; ?>
 						</td>
 					</tr>
 				</table>
